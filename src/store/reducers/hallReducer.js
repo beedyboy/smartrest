@@ -25,7 +25,12 @@ const hallReducer =(state=initState, action) => {
       return updateObject(state,{
                 htables: newHallTable
         })
-        
+
+        case 'FETCH_SEAT_BY_TABLE':
+              var newTableSeat = action.res.data.data;
+      return updateObject(state,{
+                seat: newTableSeat
+        })
         case 'CREATE_ZONE':
         // console.log(' zone', action.res.data);
         return state; 

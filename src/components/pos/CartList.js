@@ -1,33 +1,101 @@
 /**
  * Created by wawooh on 4/25/19.
  */
-import React from 'react'
+import React, {memo} from 'react'
 import {TableConfig} from '../../Config'
-import { Table , Typography} from 'antd';
+import shortId from 'shortid'
+import { Table , Typography, Button, InputNumber, Icon} from 'antd';
 const {  Text } = Typography;
 
-const CartList = ({data}) =>{
-
-      const columns = [{
+const CartList = memo(({data, settings, remove, changeQty, editPlate}) =>{
+      const columns = [
+          {
         title: 'Item',
-        dataIndex: 'product_name',
-        key: 'product_name',
-      },
+        key:shortId.generate(),
+        render:(record)=> (
+          record.base === "Yes"?
+          <Button type="primary" onClick={() => {  editPlate(record.plate)  }
+
+            } >
+              <Icon type="edit" theme="twoTone" />
+              {record.menu_name}
+              </Button>
+
+            :
+            <Text strong type="primary">{record.menu_name}</Text>
+        )
+        
+        }, 
       {
-        title: 'Unit Price',
-        dataIndex: 'price',
-        key: 'price',
+        title: 'Unit Price (' +settings.currency+')',
+        key:shortId.generate(),
+        render: (record)=>  (
+          record.base === "Yes"?
+          '-'
+
+         :
+         record.price
+        )
       },
       {
         title: 'Quantity',
-        dataIndex: 'qty',
-        key: 'qty',
+        key:shortId.generate(),
+         render: (record)=>  (
+           record.base === "Yes"?
+            '-'
+
+           :
+              <InputNumber min={0} max={1000} value={record.qty} onChange={(value) =>
+            {
+
+                 const data = {
+                     id: record.id,
+                     qty: record.qty,
+                     menu_id: record.menu_id,
+                     newQty: value
+            };
+                changeQty(data)
+            }
+
+            } />
+           )
       },
       {
-        title: 'Total Price',
+        title: 'Total Price (' +settings.currency+')',
         dataIndex: 'total',
         key: 'total',
-      }
+      },
+       {
+           title: 'Action',
+           key:shortId.generate(),
+           render: (record)=>  (
+              // record.base === "Yes"?
+              // <Button type="primary" onClick={() =>
+              //   {
+              //     editPlate(record.plate) 
+                   
+              //   }
+    
+              //   } ><Icon type="edit" theme="twoTone" /></Button>
+              // :
+              // " "
+                  
+             
+                (
+                  <Button type="danger" onClick={() => {
+                    const data = { id: record.id };  
+                  remove(data)  
+                } } >
+                  <Icon type="delete" theme="twoTone" />
+                  </Button>                          
+                              
+                  )
+           )
+
+
+          }
+
+
     ]
      return (
 
@@ -43,7 +111,7 @@ const CartList = ({data}) =>{
   )
 
 
-}
+})
 
 
 export default CartList;

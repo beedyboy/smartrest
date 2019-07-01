@@ -1,15 +1,23 @@
 {
   "name": "smartrestaurant",
-  "version": "0.1.0",
+  "version": "1.8.9",
+  "homepage": "http://192.168.0.5/smartrest/",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "core-decorators": "^0.20.0",
     "react": "^16.8.6",
+    "react-csv": "^1.1.1",
+    "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.0",
+    "react-redux": "^7.0.3",
     "react-redux-datatable": "^2.4.3",
     "react-scripts": "2.1.8",
-    "shortid": "^2.2.14"
+    "react-simple-animate": "^3.2.0",
+    "redux": "^4.0.1",
+    "shortid": "^2.2.14",
+    "styled-components": "^4.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -25,5 +33,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "react-to-print": "^2.1.2",
+    "redux-devtools-extension": "^2.13.8"
+  }
 }

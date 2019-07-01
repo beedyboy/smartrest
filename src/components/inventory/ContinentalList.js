@@ -11,9 +11,10 @@ import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
 
-const ContinentalList = ({continental, click}) =>{
+const ContinentalList = React.memo(({continental, role, click}) =>{
 
-const columns = [{
+const columns = [
+    {
         title: 'Product',
         dataIndex: 'product_name',
         key: 'product_name',
@@ -34,12 +35,15 @@ const columns = [{
         key: 'qty',
       }
     , {
-      title: 'Edit',
+      title: 'Action',
       dataIndex: 'operation',
       render: (text, record) => (
         continental.length >= 1
           ? (
-           <Button type="primary" onClick={() =>
+        <React.Fragment>
+              {(role && role.indexOf("editMenu") !== -1 )?
+         (
+             <Button type="primary" onClick={() =>
             {
                  const data = {
                      id: record.id,
@@ -52,26 +56,24 @@ const columns = [{
             }
 
             } >
-               <Icon type="edit"/> </Button>
+               <Icon type="edit"/> </Button> ): 'No access'}
+        </React.Fragment>
 
           ) : null
       ),
     }];
-
-
     return (
-
 
        <div>
 
-   <Table rowKey="id" dataSource={continental} columns={columns}  {...TableConfig2}   bordered
+   <Table rowKey="id" dataSource={continental} columns={columns}  {...TableConfig2} scroll={{ x: 400 }}   bordered
     title={() =>  <Text strong type="primary">Continental </Text>}
  />
        </div>
   )
 
 
-}
+});
 
 
 export default ContinentalList;

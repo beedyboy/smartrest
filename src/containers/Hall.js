@@ -1,22 +1,25 @@
-        import React, { PureComponent,Suspense } from 'react'
+import React, { PureComponent,Suspense } from 'react'
 import {Styles} from '../Config'
-        import {connect} from 'react-redux'
-        import {Helmet} from "react-helmet"; 
-        import PageLoading from '../components/loading/PageLoading'
-        import Zone from '../components/hall/Zone'
-        import Table from '../components/hall/Table'
-        import Seat from '../components/hall/Seat'
-        import * as hactions from '../store/actions/hallActions'
-        import '../layout.css'
+import {connect} from 'react-redux'
+import {Helmet} from "react-helmet";
+import PageLoading from '../components/loading/PageLoading'
+import Zone from '../components/hall/Zone'
+import Table from '../components/hall/Table'
+import Seat from '../components/hall/Seat'
+import * as hactions from '../store/actions/hallActions'
+import '../layout.css'
+import {position,fullname} from '../store/utility'
+import NoAccess from '../components/utility/NoAccess'
         
-import { Typography,  Button, Modal, Select, Form, Input } from 'antd'; 
+import { Typography,  Button, Modal, Select, Alert, Form, Input } from 'antd';
 const Option = Select.Option;
 const {  Text } = Typography;
 
 
 
 class Hall extends PureComponent { 
-        state = { 
+        state = {
+            id:'',
             name: '',
             tname: '',
             seat:'',
@@ -26,9 +29,26 @@ class Hall extends PureComponent {
               table: false,
               seat: false
             },
+            action: {
+              zone: true,
+              table: true,
+              seat: true
+            },
             visible : false
         }
-        
+
+        reset= ()=>{
+            // console.log('clear')
+            this.setState({
+                ...this.state,
+                 id:'',
+                name: '',
+                tname: '',
+                seat:'',
+                tables: [],
+
+            })
+        }
         showModal = (field) => {
           this.setState({
                   ...this.state,
@@ -45,10 +65,13 @@ class Hall extends PureComponent {
             modal:{
               ...this.state.modal,
             [field]: false
+            },
+              action:{
+              ...this.state.action,
+            [field]: true
             }
           });
         }
-
         componentWillMount(){
                 this.props.fetchHall()
                 this.props.fetchTable()
@@ -64,11 +87,38 @@ class Hall extends PureComponent {
         handleZoneSubmit=(e)=>{
         e.preventDefault();
         this.props.createHall(this.state)
+            if(this.props.result.sending === false) {
              this.handleOk('zone')
+                this.reset()
+            }
         }
+        handleZoneEdit = (data) => {
+             this.setState({
+                 id:    data.id,
+                 name:   data.name,
+                action: {
+                     ...this.state.action,
+                 zone:data.create
+                 },
+                 modal: {
+                       ...this.state.modal,
+                 zone: true,
+                 table: false,
+                 seat: false
+            },
+             })
+        }
+        handleZoneUpdate=(e)=>{
+            e.preventDefault();
+       this.props.updateZone(this.state)
+             if(this.props.result.sending === false) {
+             this.handleOk('zone')
 
+                this.reset()
+            }
 
-      handleChangeZone=(value) => {
+        }
+        handleChangeZone=(value) => {
               this.setState({
                 name:value
               })
@@ -77,7 +127,33 @@ class Hall extends PureComponent {
         handleTableSubmit=(e)=>{
         e.preventDefault();
         this.props.createTable(this.state.name, this.state.tname)
-            this.handleOk('table')
+            if(this.props.result.sending === false) {
+             this.handleOk('table')
+                this.reset()
+            }
+        }
+
+        handleTableEdit = (data) => {
+             this.setState({
+                 id:    data.id,
+                 name:   data.name,
+                 tname:   data.tname,
+                action: {
+                 table:data.create
+                 },
+                 modal: {
+                 table: true
+            },
+             })
+        }
+        handleTableUpdate=(e)=>{
+            e.preventDefault();
+       this.props.updateTable(this.state.name, this.state.tname, this.state.id)
+            if(this.props.result.sending === false) {
+             this.handleOk('table')
+                this.reset()
+            }
+
         }
 
         getTableByZone = (value) => {
@@ -85,219 +161,312 @@ class Hall extends PureComponent {
                 name:value
              })
             this.props.getTableByHall(value)
-            // console.log(this.state)
         }
 
 
         handleChangeTable=(value) => {
               this.setState({
-                name:value
+                tname:value
               })
     }
 
          handleSeatSubmit=(e)=>{
             e.preventDefault();
-        this.props.createSeat(this.state.name, this.state.seat)
-            this.handleOk('seat')
+        this.props.createSeat(this.state.tname, this.state.seat)
+            console.log(this.props.result.sending)
+           if(this.props.result.sending === false) {
+
+                this.reset()
+             this.handleOk('seat')
+            }
+        }
+
+        handleSeatEdit = (data) => {
+             this.setState({
+                 id:    data.id,
+                 name:   data.hid,
+                 tname:   data.tid,
+                 seat:   data.seat,
+                action: {
+                 seat:data.create
+                 },
+                 modal: {
+                 seat: true
+            },
+             })
+            this.getTableByZone(data.hid)
+        }
+   handleSeatUpdate=(e)=>{
+            e.preventDefault();
+       this.props.updateSeat(this.state.name, this.state.seat, this.state.id)
+            if(this.props.result.sending === false) {
+             this.handleOk('seat')
+
+                this.reset()
+            }
+
         }
 
 
         render() {
-            // console.log(this.props)
-        const {zones,tables, htables} = this.props
-        return (
+            if (position() === "SuperAdmin" || position() === "Admin" || position() === "Supervisor") {
 
-         
-<React.Fragment>
-<Helmet>
-       <title>Hall Management</title>
-       <meta name="description" content="Hall Management" />
-         </Helmet> 
- <div className="grid" style={Styles.div}>
- 
- <div className="column column-4">   
-          
-          <Text strong type="secondary">Zone Management</Text>
-     <br />
-          <Button type="primary" onClick={() =>this.showModal('zone')}> Add Zone   </Button> 
-          <Zone zones={zones}/> 
-  </div>
- <div className="column column-4">
-
- <Text  strong type="secondary">Table Management</Text>
- <br/>
-  <Button type="primary" onClick={() =>this.showModal('table')}> Add Table   </Button> 
-  <Table tables={tables}/>
-   </div>
-
- <div className="column column-4">  
-          
-   <Text strong type="secondary">Seat Management</Text>
-     <br />
-          <Button type="primary" onClick={() =>this.showModal('seat')}> Add Seat   </Button>
-  <Seat seats={this.props.seats}/>
-  </div>
-
- </div>
-        
-        <React.Fragment>
-        <Suspense fallback={<PageLoading/>}>
-<Modal
-          title="Table"
-          visible={this.state.modal.table}
-          onOk={()=>this.handleOk('table')}
-          onCancel={this.handleCancel}
-        >
-        <Form layout="horizontal" onSubmit={this.handleTableSubmit}>
-
-        <Form.Item label="Zones" >
-        
-          <Select
-    showSearch
-    style={{ width: 200 }}
-    placeholder="Select a zone"
-    optionFilterProp="children"
-    onChange={this.handleChangeZone}
-    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-  >
-  {this.props.zones.map((zone, key) => {
-           return (
-        <Option key={zone.id} value={zone.id}> {zone.name} </Option>
-        )
-        }
-        )}
-   
-  </Select>
-         </Form.Item>
+                const {zones, tables, htables, result} = this.props
+                const {name, tname, seat} = this.state;
+                const enabled = name.length > 0;
+                const tenabled = name &&
+                    tname.length > 0;
+                const senabled = name &&
+                    seat.length > 0;
+                return (
 
 
-         <Form.Item  label="Table Name"  >
-            <Input id="tname" placeholder="Enter Table Name"  value={this.state.tname} onChange={this.handleChange} />
-          </Form.Item>
-      
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit" 
-          >
-           Save
-          </Button>
-        </Form.Item>    
-        </Form>
-        
+                    <React.Fragment>
+                        <Helmet>
+                            <title>Hall Management</title>
+                            <meta name="description" content="Hall Management"/>
+                        </Helmet>
+                        <div className="grid" style={Styles.div}>
 
-        </Modal>  
-</Suspense>
-        </React.Fragment>
+                            <div className="column column-4">
+
+                                <Text strong type="secondary">Zone
+                                    Management</Text>
+                                <br />
 
 
+                                <Button type="primary"
+                                        onClick={() => this.showModal('zone')}>
+                                    Add Zone </Button>
 
-    <React.Fragment>
-        <Suspense fallback={<PageLoading/>}>
-<Modal
-          title="Zone"
-          visible={this.state.modal.zone}
-          onOk={()=>this.handleOk('zone')}
-          onCancel={this.handleCancel}
-        >
-        <Form layout="horizontal" onSubmit={this.handleZoneSubmit}>
+                                <Zone zones={zones}
+                                      click={this.handleZoneEdit}/>
 
+                            </div>
+                            <div className="column column-4">
 
-         <Form.Item  label="Zone Name"  >
-            <Input id="name" placeholder="Enter Zone Name"  value={this.state.name} onChange={this.handleChange} />
-          </Form.Item>
+                                <Text strong type="secondary">Table
+                                    Management</Text>
+                                <br/>
+                                <Button type="primary"
+                                        onClick={() => this.showModal('table')}>
+                                    Add Table </Button>
+                                <Table tables={tables}
+                                       click={this.handleTableEdit}/>
+                            </div>
 
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-          >
-           Save Zone
-          </Button>
-        </Form.Item>
-        </Form>
+                            <div className="column column-4">
 
+                                <Text strong type="secondary">Seat
+                                    Management</Text>
+                                <br />
 
-        </Modal>
-</Suspense>
-        </React.Fragment>
+                                <Button type="primary"
+                                        onClick={() => this.showModal('seat')}>
+                                    Add Seat </Button>
 
+                                <Seat seats={this.props.seats}
+                                      click={this.handleSeatEdit}/>
+                            </div>
 
-    <React.Fragment>
-        <Suspense fallback={<PageLoading/>}>
-<Modal
-          title="Seat"
-          visible={this.state.modal.seat}
-          onOk={()=>this.handleOk('seat')}
-          onCancel={this.handleCancel}
-        >
-        <Form layout="horizontal" onSubmit={this.handleSeatSubmit}>
-
-             <Form.Item label="Zones" >
-
-          <Select
-    showSearch
-    style={{ width: 200 }}
-    placeholder="Select a zone"
-    optionFilterProp="children"
-    onChange={this.getTableByZone}
-    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-  >
-  {this.props.zones.map((zone, key) => {
-           return (
-        <Option key={zone.id} value={zone.id}> {zone.name} </Option>
-        )
-        }
-        )}
-
-  </Select>
-         </Form.Item>
-
-             <Form.Item label="Tables" >
-
-          <Select
-    showSearch
-    style={{ width: 200 }}
-    placeholder="Select a table"
-    optionFilterProp="children"
-    onChange={this.handleChangeTable}
-    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-  >
-  {htables.map((table, key) => {
-           return (
-        <Option key={table.id} value={table.id}> {table.name} </Option>
-        )
-        }
-        )}
-
-  </Select>
-         </Form.Item>
+                        </div>
 
 
-         <Form.Item  label="Seat Name"  >
-            <Input id="seat" placeholder="Enter Seat Name"  value={this.state.seat} onChange={this.handleChange} />
-          </Form.Item>
+                        <React.Fragment>
+                            <Suspense fallback={<PageLoading/>}>
+                                <Modal
+                                    title="Zone"
+                                    visible={this.state.modal.zone}
+                                    onOk={() => this.handleOk('zone')}
+                                    onCancel={() => this.handleOk('zone')}
+                                >
+                                    <Form layout="horizontal"
+                                          onSubmit={this.state.action.zone ? this.handleZoneSubmit : this.handleZoneUpdate}>
+
+                                        <Form.Item label="Zone Name">
+                                            <Input id="name"
+                                                   placeholder="Enter Zone Name"
+                                                   value={this.state.name}
+                                                   onChange={this.handleChange}/>
+                                        </Form.Item>
+
+                                        <Form.Item>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                disabled={!enabled}
+                                            >
+                                                {this.state.action.zone ? "Add Zone" : "Save Update"}
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+
+                                    {  result.sending ? <Alert
+                                        message="Error"
+                                        description={result.message}
+                                        type="error"
+                                        showIcon
+                                    /> : ''}
+                                </Modal>
+                            </Suspense>
+                        </React.Fragment>
 
 
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-          >
-           Save Seat
-          </Button>
-        </Form.Item>
-        </Form>
+                        <React.Fragment>
+                            <Suspense fallback={<PageLoading/>}>
+                                <Modal
+                                    title="Table"
+                                    visible={this.state.modal.table}
+                                    onOk={() => this.handleOk('table')}
+                                    onCancel={() => this.handleOk('table')}
+                                >
+                                    <Form layout="horizontal"
+                                          onSubmit={this.state.action.table ? this.handleTableSubmit : this.handleTableUpdate}>
+
+                                        <Form.Item label="Zones">
+
+                                            <Select
+                                                showSearch
+                                                style={{width: 200}}
+                                                placeholder="Select a zone"
+                                                optionFilterProp="children"
+                                                onChange={this.handleChangeZone}
+                                                value={this.state.name}
+                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                            >
+                                                {zones && zones.map((zone, key) => {
+                                                        return (
+                                                            <Option key={zone.id}
+                                                                    value={zone.id}> {zone.name} </Option>
+                                                        )
+                                                    }
+                                                )}
+
+                                            </Select>
+                                        </Form.Item>
 
 
-        </Modal>
-</Suspense>
-        </React.Fragment>
+                                        <Form.Item label="Table Name">
+                                            <Input id="tname"
+                                                   placeholder="Enter Table Name"
+                                                   value={this.state.tname}
+                                                   onChange={this.handleChange}/>
+                                        </Form.Item>
+
+                                        <Form.Item>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                disabled={!tenabled}
+                                            >
+                                                {this.state.action.table ? "Add Table" : "Save Update"}
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+
+                                    {  result.sending ? <Alert
+                                        message="Error"
+                                        description={result.message}
+                                        type="error"
+                                        showIcon
+                                    /> : ''}
+                                </Modal>
+                            </Suspense>
+                        </React.Fragment>
 
 
-</React.Fragment>
+                        <React.Fragment>
+                            <Suspense fallback={<PageLoading/>}>
+                                <Modal
+                                    title="Seat"
+                                    visible={this.state.modal.seat}
+                                    onOk={() => this.handleOk('seat')}
+                                    onCancel={() => this.handleOk('seat')}
+                                >
+                                    <Form layout="horizontal"
+                                          onSubmit={this.state.action.table ? this.handleSeatSubmit : this.handleSeatUpdate}>
 
-        )
+                                        <Form.Item label="Zones">
+
+                                            <Select
+                                                showSearch
+                                                style={{width: 200}}
+                                                placeholder="Select a zone"
+                                                optionFilterProp="children"
+                                                onChange={this.getTableByZone}
+                                                value={this.state.name}
+                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                            >
+                                                {zones && zones.map((zone, key) => {
+                                                        return (
+                                                            <Option key={zone.id}
+                                                                    value={zone.id}> {zone.name} </Option>
+                                                        )
+                                                    }
+                                                )}
+
+                                            </Select>
+                                        </Form.Item>
+
+                                        <Form.Item label="Tables">
+
+                                            <Select
+                                                showSearch
+                                                style={{width: 200}}
+                                                placeholder="Select a table"
+                                                optionFilterProp="children"
+                                                onChange={this.handleChangeTable}
+                                                value={this.state.tname}
+                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                            >
+                                                {htables.map((table, key) => {
+                                                        return (
+                                                            <Option key={table.id}
+                                                                    value={table.id}> {table.name} </Option>
+                                                        )
+                                                    }
+                                                )}
+
+                                            </Select>
+                                        </Form.Item>
+
+
+                                        <Form.Item label="Seat Name">
+                                            <Input id="seat"
+                                                   placeholder="Enter Seat Name"
+                                                   value={this.state.seat}
+                                                   onChange={this.handleChange}/>
+                                        </Form.Item>
+
+
+                                        <Form.Item>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                disabled={!senabled}
+                                            >
+                                                {this.state.action.table ? "Add Seat" : "Save Update"}
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+
+                                    {  result.sending ? <Alert
+                                        message="Error"
+                                        description={result.message}
+                                        type="error"
+                                        showIcon
+                                    /> : ''}
+
+                                </Modal>
+                            </Suspense>
+                        </React.Fragment>
+
+
+                    </React.Fragment>
+
+                )
+            }
+           return <NoAccess name={fullname()}/>
         }
         }
 
@@ -305,21 +474,25 @@ class Hall extends PureComponent {
         const mapStateToProps = (state)=> {
         // console.log(state)
         return {
+        result: state.form.result,
         zones: state.hall.zone, 
         htables: state.hall.htables,
         users: state.user.users,
         tables: state.hall.table,
-        seats: state.hall.seat
+        seats: state.hall.seat,
         }
         }
         const mapDispatchToProps = (dispatch) => {
         return {
         fetchHall: ()=> dispatch(hactions.fetchHall()),
         createHall:(name)=>dispatch(hactions.createHall(name)),
+        updateZone:(name)=>dispatch(hactions.updateZone(name)),
         createTable:(hid,name)=>dispatch(hactions.createTable(hid,name)),
+        updateTable:(hid,name,id)=>dispatch(hactions.updateTable(hid,name,id)),
         fetchTable:()=>dispatch(hactions.fetchTable()),
         getTableByHall:(hid)=>dispatch(hactions.getTableByHall(hid)),
         createSeat:(tid,name)=>dispatch(hactions.createSeat(tid,name)),
+        updateSeat:(tid,name,id)=>dispatch(hactions.updateSeat(tid,name,id)),
         fetchSeat: ()=> dispatch(hactions.fetchSeat())
         }
         }

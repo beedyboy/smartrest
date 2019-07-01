@@ -7,9 +7,10 @@ import { Typography,Table,Icon, Button } from 'antd';
 const {  Text } = Typography;
 
 
-const LocalList = ({local, option, click}) =>{
+const LocalList = React.memo(({local, role, click}) =>{
 
-const columns = [{
+const columns = [
+    {
         title: 'Product',
         dataIndex: 'product_name',
         key: 'product_name',
@@ -35,6 +36,9 @@ const columns = [{
       render: (text, record) => (
         local.length >= 1
           ? (
+              <React.Fragment>
+                     {(role && role.indexOf("editMenu") !== -1 )?
+         (
            <Button type="primary" onClick={() =>
             {
                  const data = {
@@ -48,7 +52,9 @@ const columns = [{
             }
 
             } >
-               <Icon type="edit"/> </Button>
+               <Icon type="edit"/> </Button>)
+                         : 'No access'}
+              </React.Fragment>
 
           ) : null
       ),
@@ -60,14 +66,14 @@ const columns = [{
 
        <div>
 
-   <Table rowKey="id" dataSource={local} columns={columns}  {...TableConfig2}   bordered
+   <Table rowKey="id" dataSource={local} columns={columns}  {...TableConfig2} scroll={{ x: 400 }}   bordered
     title={() =>  <Text strong type="primary">Local </Text>}
  />
        </div>
   )
 
 
-}
+});
 
 
 export default LocalList;

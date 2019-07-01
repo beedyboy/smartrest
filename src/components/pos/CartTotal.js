@@ -1,11 +1,11 @@
 /**
  * Created by wawooh on 4/25/19.
  */
-import React from 'react'
+import React, {memo} from 'react'
 
 import { Table , Typography, Tag} from 'antd';
 const {  Text } = Typography;
-const CartTotal = ({summary}) =>{
+const CartTotal = memo(({summary, settings}) =>{
       const columns = [{
         // title: 'Product Count',
         dataIndex: 'productCount',
@@ -26,7 +26,7 @@ const CartTotal = ({summary}) =>{
         dataIndex: 'total',
         key: 'total',
             render: (text, record) => (
-                   <Tag color="geekblue" key={record.total}>Sub Total  {record.total} </Tag>
+                   <Tag color="geekblue" key={record.total}>Sub Total  {record.total}  ({settings.currency}) </Tag>
 
 
            ),
@@ -37,6 +37,9 @@ const CartTotal = ({summary}) =>{
 
        <div>
 
+      <Table rowKey="id" dataSource={summary} columns={columns} showHeader={false}  pagination={false}   bordered
+    title={() =>  <Text strong type="primary">Summary </Text>}
+ />
        </div>
 
 
@@ -44,6 +47,6 @@ const CartTotal = ({summary}) =>{
 
 
 }
-
+)
 
 export default CartTotal;

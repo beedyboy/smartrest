@@ -13,12 +13,11 @@ const userReducer =(state=initState, action) => {
         
         case 'CREATE_USER':
         console.log(' project', action.res.data);
-        return state; 
+        return state;
 
         case 'CREATE_USER_ERROR':
-        console.log('Error creating user', action.err)
+           console.log(' project', action.res.data);
         return state;
-        
         default:
         return state;
      

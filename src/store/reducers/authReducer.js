@@ -11,6 +11,7 @@ const initialState= {
     isAuthenticated: false,
     position: '',
     user: '',
+    role: [],
     fullname: '',
     email: '',
     shop:''
@@ -23,14 +24,21 @@ const authStart=(state, action)=>{
         email: '',
         shop:'',
         position: '',
-        isAuthenticated: false, 
+        isAuthenticated: false,
+        role: [],
         error:null,
         loading:true
     })
 }
 
 const authSuccess=(state, action)=>{
-    // console.log(action)
+    // var role = action.data.record.role+''
+
+        //        const role = action.data.record.role +''
+        //        const ar = role.replace(/(\r\n|\n|\r)/gm, "");
+        //        const ur = ar.replace(/\n/ig, '').trim().split(',')
+        // localStorage.setItem('role', ur);
+    // var roleArr = role.replace(/\n/ig, '').split(',');
     const position = action.data.record.position
     return updateObject(state, {
         token: action.data.record.token,

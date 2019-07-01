@@ -11,14 +11,6 @@ const supplierReducer =(state=initState, action) => {
                 suppliers: supplierData
         }
 
-        case 'CREATE_SUPPLIER':
-        console.log(' project', action.res.data);
-        return state;
-
-        case 'CREATE_USER_ERROR':
-        console.log('Error creating user', action.err)
-        return state;
-
         default:
         return state;
 

@@ -5,9 +5,11 @@
         import {connect} from 'react-redux'
         import * as actions from '../../store/actions/inventoryActions'
         import AllocationList from './AllocationList'
+        import SaveButton from '../../components/utility/SaveButton'
         import '../../layout.css'
 
-import {  Button, Select, Form, Input } from 'antd';
+import {  Typography, Select, Button,Alert,  Form, Input } from 'antd';
+const {  Text } = Typography;
 const Option = Select.Option;
 
 const formItemLayout = {
@@ -26,10 +28,22 @@ class Allocate extends PureComponent {
             qty:'',
             itemId: '',
             kitchen: '',
+            unit: '',
             create:true
         }
 
 
+        reset=()=> {
+            this.setState({
+                ...this.state,
+             id:'',
+            qty:'',
+            itemId: '',
+            kitchen: '',
+            unit: '',
+            create:true
+            })
+        }
         handleKitchen = (value)=> {
         this.setState({
         kitchen:value
@@ -50,9 +64,21 @@ class Allocate extends PureComponent {
               })
     }
 
+ handleUnit = (value)=> {
+            console.log(value)
+        this.setState({
+        unit:value
+        })
+        }
+
          handleSubmit=(e)=>{
             e.preventDefault();
        this.props.createNewAllocation(this.state)
+              if(this.props.result.success !== true && this.props.result.error !== true) {
+                this.reset()
+
+            }
+
 
         }
 
@@ -60,6 +86,7 @@ class Allocate extends PureComponent {
              this.setState({
                  id:    data.id,
                  qty:   data.qty,
+                 unit:   data.unit,
                 itemId: data.itemId,
                  kitchen:data.kitchen,
                 create: data.create
@@ -69,18 +96,42 @@ class Allocate extends PureComponent {
          handleUpdate=(e)=>{
             e.preventDefault();
        this.props.updateAllocation(this.state)
+              if(this.props.result.success !== true && this.props.result.error !== true) {
+                this.reset()
+
+            }
+
         }
 
-        componentDidMount(){
-                this.props.fetchPurchases()
-             this.props.fetchAllocation()
+        componentDidMount() {
+            this.props.fetchPurchases()
+            this.props.fetchAllocation()
         }
 
     render(){
-            const {items, allocations} = this.props
+const {itemId,qty, kitchen,unit} = this.state
+    const enabled =    itemId &&   qty  && unit.length > 0 && kitchen.length > 0;
+const selectAfter = (
+  <Select defaultValue="Kg" value={this.state.unit} onChange={this.handleUnit} id="unit" style={{ width: 100 }}>
+    <Option value="Bottle">Bottle(s)</Option>
+    <Option value="Crate">Crate</Option>
+    <Option value="Cup">Cup(s)</Option>
+    <Option value="Carton">Carton</Option>
+    <Option value="Dozen">Dozen</Option>
+    <Option value="Gallon">Gallon</Option>
+    <Option value="Kg">Kg</Option>
+    <Option value="Litre">Litre</Option>
+    <Option value="Pack">Pack</Option>
+    <Option value="Piece">Piece(s)</Option>
+    <Option value="Roll">Roll</Option>
+  </Select>
+);
+ const {items, allocations, role, result} = this.props
         return (
 <div className="grid">
       <div className="column column-6">
+          <Text strong type="primary">Allocate to Kitchens</Text>
+
       <Form   {...formItemLayout}  onSubmit={this.state.create ? this.handleSubmit : this.handleUpdate}>
  <Form.Item label="Item Name">
 
@@ -122,20 +173,31 @@ class Allocate extends PureComponent {
 
 
  <Form.Item label="Quantity">
-         <Input id="qty" value={this.state.qty} onChange={this.handleChange} />
+          <Input id="qty"  addonAfter={selectAfter} value={this.state.qty} onChange={this.handleChange} />
       </Form.Item>
 
           <Form.Item wrapperCol={{ span: 12, offset: 8 }}>
-              <Button type="primary" htmlType="submit" >
-              {this.state.create ? "Add" : "Save Update"}
-           </Button>
+           {this.state.create ?
+                <SaveButton role={role} disabled={!enabled} buttonType="primary" name="Add" permission="addToKitchen"/>
+                    :
+                  <SaveButton role={role} disabled={!enabled} buttonType="primary" name="Save Update" permission="addPurchases" />}
+
+<Button style={{ marginLeft: 8 }} onClick={this.reset}>
+              Clear
+            </Button>
         </Form.Item>
 
       </Form>
+          {  result.sending ? <Alert
+          message="Error"
+          description={result.message}
+          type="error"
+          showIcon
+        /> : ''}
         </div>
 
     <div className="column column-6">
-<AllocationList allocation={allocations} click={this.handleEdit}/>
+<AllocationList role={role} allocation={allocations} click={this.handleEdit}/>
         </div>
 
 </div>
@@ -143,10 +205,11 @@ class Allocate extends PureComponent {
     }
 }
     const mapStateToProps = (state)=> {
-        // console.log(state)
         return {
+        result: state.form.result,
         items: state.inventory.purchases,
-        allocations: state.inventory.allocations
+        allocations: state.inventory.allocations,
+        role: state.auth.role
         }
         }
         const mapDispatchToProps = (dispatch) => {

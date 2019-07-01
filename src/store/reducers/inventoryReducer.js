@@ -1,6 +1,9 @@
- import { notification } from 'antd';
+
 const initState = {
     products:[],
+    kitchen:[],
+    kitchenCat:[],
+    menu:[],
     continental:[],
     local:[],
     bar:[],
@@ -10,6 +13,12 @@ const initState = {
 }
 const inventoryReducer =(state=initState, action) => {
     switch (action.type){
+        case 'FETCH_ALL_PRODUCT':
+            var allData = action.res.data.data;
+        return {
+                ...state,
+                products: allData
+        }
         case 'FETCH_LOCAL':
          var localData = action.res.data.data;
         return {
@@ -29,6 +38,25 @@ const inventoryReducer =(state=initState, action) => {
         return {
                 ...state,
                 bar: barData
+        }
+        case 'FETCH_KITCHEN':
+         var kitchenData = action.res.data.data;
+        return {
+                ...state,
+                kitchen: kitchenData
+        }
+        case 'FETCH_KITCHEN_CATEGORY':
+                 var kitchenCatData = action.res.data.data;
+                return {
+                        ...state,
+                        kitchenCat: kitchenCatData
+                }
+
+        case 'FETCH_MENU':
+              var menuData = action.res.data.data;
+        return {
+                ...state,
+                menu: menuData
         }
 
         case 'FETCH_PURCHASES':
@@ -51,38 +79,6 @@ const inventoryReducer =(state=initState, action) => {
                 ...state,
                 kitchenProducts: kitchenProductsData
         }
-        case 'CREATE_PRODUCT':
-        console.log(' product', action.res.data);
-        return state;
-
-        case 'CREATE_PRODUCT_ERROR':
-            notification.error({
-                     placement: 'topRight',
-                      top: 24,
-                    message: 'Message',
-                    description: action.res.data.msg,
-                    style: {
-                     width: 400,
-                     backgroundColor:'red',
-                        color:'white'
-                 },
-                  });
-        return state;
-
-        case 'SAVE_SUCCESS':
-            notification.success({
-                     placement: 'topRight',
-                      top: 24,
-                    message: 'Message',
-                    description: action.res.data.msg,
-                    style: {
-                     width: 400,
-                     backgroundColor:'green',
-                        color:'white'
-                 },
-                  });
-        // console.log('Error creating product', action)
-        return state;
 
         default:
         return state;

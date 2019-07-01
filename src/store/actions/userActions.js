@@ -9,30 +9,83 @@ export const createUser = (user) => {
         //make async call to database
          axios.post(serverUrl + 'user/save/',{
            ...user,
-           shopId: shopId
+           shopId: shopId()
         })
          .then(res => {
              // console.log(res)
-            dispatch(fetchUsers());    
-        // dispatch({type: 'FETCH_USER'}); 
+             if(res.data.status === "error"){
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+           }
+           else{
+                  dispatch({type: 'SAVE_SUCCESS', res});
+                  dispatch({type: 'CREATE_FORM', res});
+                dispatch(fetchUsers());
+           }
         }).catch((err) => {
-            dispatch({type: 'CREATE_USER_ERROR', err});
+            dispatch({type: 'CREATE_FORM_ERROR', err});
         })
-        // dispatch({type: 'CREATE_USER', user}); 
-
     }
 }
 export const fetchUsers = () => {
     return (dispatch) => {
-        // console.log('called')
        // make async call to database
-       axios.get( serverUrl + 'user/list')
-         .then(res => {
+       axios.get( serverUrl + 'user/list',{
+           params : {
+            shopId: shopId()
+          }
+       })
+
+           .then(res => {
              
         dispatch({type: 'FETCH_USER', res}); 
         }).catch((err) => {
-            dispatch({type: 'CREATE_USER_ERROR', err});
+            dispatch({type: 'CREATE_FORM_ERROR', err});
         })
 
+    }
+}
+
+export const updateUser = (user) => {
+    return (dispatch, getState) => {
+        //make async call to database
+         axios.post(serverUrl + 'user/update/',{
+           ...user,
+           shopId: shopId()
+        })
+         .then(res => {
+             // console.log(res)
+            if(res.data.status === "error"){
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+           }
+           else{
+                  dispatch({type: 'SAVE_SUCCESS', res});
+                  dispatch({type: 'CREATE_FORM', res});
+                dispatch(fetchUsers());
+           }
+        }).catch((err) => {
+            dispatch({type: 'CREATE_FORM_ERROR', err});
+        })
+    }
+}
+
+export const deleteUser = (id) => {
+    return (dispatch, getState) => {
+        //make async call to database
+         axios.post(serverUrl + 'user/destroy/',{
+           id:id,
+           shopId: shopId()
+        })
+         .then(res => {
+            if(res.data.status === "error"){
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+           }
+           else{
+                  dispatch({type: 'SAVE_SUCCESS', res});
+                  dispatch({type: 'CREATE_FORM', res});
+                dispatch(fetchUsers());
+           }
+        }).catch((err) => {
+            dispatch({type: 'CREATE_FORM_ERROR', err});
+        })
     }
 }

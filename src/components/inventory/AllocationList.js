@@ -7,9 +7,9 @@ import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
 
-const AllocationList = ({allocation,  click}) =>{
-
-const columns = [{
+const AllocationList = React.memo(({allocation, role,  click}) =>{
+const columns = [
+    {
         title: 'Item',
         dataIndex: 'item_name',
         key: 'item_name',
@@ -23,47 +23,54 @@ const columns = [{
       {
         title: 'Quantity',
         dataIndex: 'qty',
+        render:(text,record)=> (
+
+                  <Text>{record.qty +''+ record.unit}</Text>
+
+          ),
         key: 'qty',
-      }
-    , {
-      title: 'Edit',
+      },
+     {
+      title: 'Action',
       dataIndex: 'operation',
       render: (text, record) => (
         allocation.length >= 1
-          ? (
-           <Button type="primary" onClick={() =>
+         ? (
+              <React.Fragment>
+            {(role && role.indexOf("editAllocation") !== -1 ) ?
+                ( <Button type="primary" onClick={() =>
             {
                  const data = {
                      id: record.id,
                   kitchen: record.kitchen,
                  qty: record.qty,
+                 unit: record.unit,
                 itemId: record.itemId,
                 create:false,
-            };
+           };
                 click(data)
             }
 
             } >
-               <Icon type="edit"/> </Button>
+               <Icon type="edit"/> </Button> ):
+                          'No access'}
+         </React.Fragment>
 
           ) : null
       ),
     }];
 
-
     return (
-
-
        <div>
 
    <Table rowKey="id" dataSource={allocation} columns={columns}  {...TableConfig2}   bordered
-    title={() =>  <Text strong type="primary">Allocation </Text>}
+    title={() =>  <Text strong type="primary">Allocation Record [Items assigned to various kitchens]</Text>}
  />
        </div>
   )
 
 
-}
+});
 
 
 export default AllocationList;

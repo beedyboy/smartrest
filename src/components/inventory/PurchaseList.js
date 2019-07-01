@@ -11,9 +11,10 @@ import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
 
-const PurchaseList = ({purchases, click}) =>{
+const PurchaseList = React.memo(({purchases,  click}) =>{
 
-const columns = [{
+const columns = [
+    {
         title: 'Item',
         dataIndex: 'item_name',
         key: 'item_name',
@@ -31,6 +32,11 @@ const columns = [{
       {
         title: 'Quantity',
         dataIndex: 'qty',
+          render:(text,record)=> (
+
+                  <Text>{record.qty +''+ record.unit}</Text>
+
+          ),
         key: 'qty',
       },
       {
@@ -44,7 +50,9 @@ const columns = [{
       render: (text, record) => (
         purchases.length >= 1
           ? (
-           <Button type="primary" onClick={() =>
+           <React.Fragment>
+
+             <Button type="primary" onClick={() =>
             {
                  const data = {
                      id: record.id,
@@ -53,33 +61,35 @@ const columns = [{
             supplierId: record.supplierId,
             purchased_date: record.purchased_date,
             transaction_type: record.transaction_type,
-                     qty:record.qty,
+            unit: record.unit,
+            note: record.note,
+             qty:record.qty,
             create:false,
             };
                 click(data)
             }
 
             } >
-               <Icon type="edit"/> </Button>
+
+            <Icon type="edit"/> </Button>
+        </React.Fragment>
 
           ) : null
       ),
     }];
 
-
     return (
-
 
        <div>
 
    <Table rowKey="id" dataSource={purchases} columns={columns}  {...TableConfig2}   bordered
-    title={() =>  <Text strong type="primary">Bar </Text>}
+    title={() =>  <Text strong type="primary">Store Items </Text>}
  />
        </div>
   )
 
 
-}
+});
 
 
 export default PurchaseList;

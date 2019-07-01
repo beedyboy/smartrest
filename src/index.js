@@ -1,18 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
-
-// import './index.css';
+import './asset/css/main.css'
+import './asset/css/util.css'
+import './grid.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import {createStore, applyMiddleware} from 'redux';
+import {createStore,compose, applyMiddleware} from 'redux';
 import rootReducer from './store/reducers/rootReducer';
 import  {Provider} from 'react-redux';
 import thunk from 'redux-thunk'
+const composeEnhances = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(rootReducer,applyMiddleware(thunk));
- 
+const store = createStore(rootReducer, composeEnhances(applyMiddleware(thunk)));
  
  
  

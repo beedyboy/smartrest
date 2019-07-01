@@ -1,6 +1,5 @@
         import React, { PureComponent, Suspense } from 'react'
-import {Styles} from '../Config'
-        // import {createProduct} from '../../store/actions/inventoryActions'
+        import {Styles} from '../Config'
         import {connect} from 'react-redux'
         import {Helmet} from "react-helmet"; 
         import PageLoading from '../components/loading/PageLoading'
@@ -10,9 +9,10 @@ import {Styles} from '../Config'
         import * as actions from '../store/actions/inventoryActions'
         import '../layout.css'
         
-import { Divider,  Button, Select, Form, Input, Spin } from 'antd';
+import { Divider,  Button, Tooltip, Select, Form, Alert, Icon, Input, Spin, Typography } from 'antd';
 const Option = Select.Option;
 
+const {  Text } = Typography;
 
 class ProductMenu extends PureComponent {
         state = {
@@ -24,8 +24,19 @@ class ProductMenu extends PureComponent {
             tables: []
         }
 
-
+        reset=()=>{
+            this.setState({
+                ...this.state,
+                 id:'',
+                kitchen: '',
+                product_name: '',
+                price:'',
+                create:true,
+                tables: []
+            })
+        }
         handleEdit = (data) => {
+            // console.log(data)
              this.setState({
                  id:    data.id,
                  product_name: data.product_name,
@@ -57,6 +68,10 @@ class ProductMenu extends PureComponent {
          handleSubmit=(e)=>{
             e.preventDefault();
        this.props.createProduct(this.state)
+              if(this.props.result.success !== true && this.props.result.error !== true) {
+                this.reset()
+
+            }
 
         }
 
@@ -67,8 +82,12 @@ class ProductMenu extends PureComponent {
         }
 
         render() {
-            // console.log(this.props)
-        const {continental,local, bar} = this.props
+
+        const {continental,local, bar, role, result} = this.props
+        const {product_name,kitchen, price} = this.state
+    const enabled =    product_name &&
+                           kitchen  &&
+                            price.length > 0;
         return (
 
 
@@ -77,19 +96,28 @@ class ProductMenu extends PureComponent {
        <title>Menu Management</title>
        <meta name="description" content="Menu Management" />
          </Helmet> 
- <div className="grid" style={Styles.div}>
- 
- <div className="column offset-2 column-8">
+
+
+        {(role && role.indexOf("addMenu") !== -1 )?
+         (
+         <React.Fragment>
+             <div className="grid" style={Styles.div}>
+
+ <div className="column offset-1 column-9">
           
-          {/*<Text strong type="secondary">Zone Management</Text>*/}
+          <Text strong type="primary">Create Product</Text>
   <Suspense fallback={<Spin/>}>
         <Form layout="inline" onSubmit={this.state.create ? this.handleSubmit : this.handleUpdate}>
 
          <Form.Item>
+
+<Tooltip placement="top" title="Enter product name">
             <Input id="product_name" placeholder="Add an item"  value={this.state.product_name} onChange={this.handleChange} />
+</Tooltip>
           </Form.Item>
 
              <Form.Item>
+<Tooltip placement="top" title="Select a Kitchen">
 
           <Select
     showSearch
@@ -105,48 +133,61 @@ class ProductMenu extends PureComponent {
         <Option value="Local">Local</Option>
 
   </Select>
+</Tooltip>
          </Form.Item>
-
 <Form.Item>
-            <Input id="price" placeholder="Price"  value={this.state.price} onChange={this.handleChange} />
+
+<Tooltip placement="top" title="Add product price">
+    <Input id="price" placeholder="Price"  value={this.state.price} onChange={this.handleChange} />
+</Tooltip>
           </Form.Item>
 
         <Form.Item>
           <Button
             type="primary"
-            htmlType="submit"
-          >
+            htmlType="submit" disabled={!enabled}
+          ><Icon type="gift" />
               {this.state.create ? "Add" : "Save Update"}
           </Button>
+             <Button style={{ marginLeft: 8 }} onClick={this.reset}>
+              Clear
+            </Button>
         </Form.Item>
 
 
         </Form>
   </Suspense>
 
+   {  result.sending ? <Alert
+          message="Error"
+          description={result.message}
+          type="error"
+          showIcon
+        /> : ''}
   </div>
 
  </div>
 
     <Divider />
-
+        </React.Fragment>
+         ): ''}
 
  <div className="grid">
 
  <div className="column column-4" style={Styles.div}>
-     <ContinentalList  continental={continental} click={this.handleEdit} />
+     <ContinentalList role={role} continental={continental} click={this.handleEdit} />
 
  </div>
 
  <div className="column column-4" style={Styles.div}>
        <Suspense fallback={<PageLoading/>}>
-<LocalList local={local} option={this.state} click={this.handleEdit} />
+<LocalList local={local} role={role} option={this.state} click={this.handleEdit} />
        </Suspense>
 
  </div>
 
  <div className="column column-4" style={Styles.div}>
- <BarList bar={bar} click={this.handleEdit}/>
+ <BarList bar={bar} role={role} click={this.handleEdit}/>
 
  </div>
 
@@ -164,11 +205,11 @@ class ProductMenu extends PureComponent {
         const mapStateToProps = (state)=> {
         // console.log(state)
         return {
+        result: state.form.result,
         continental: state.inventory.continental,
         bar: state.inventory.bar,
         local: state.inventory.local,
-        // tables: state.hall.table,
-        // seats: state.hall.seat
+        role: state.auth.role
         }
         }
         const mapDispatchToProps = (dispatch) => {

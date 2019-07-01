@@ -1,18 +1,20 @@
 import React, { PureComponent } from 'react' 
 import CreateSupplier from '../components/supplier/CreateSupplier'
 import {fetchSupplier} from '../store/actions/supplierActions'
-import SupplierList from '../components/supplier/SupplierList'
 import {connect} from 'react-redux'
 import {Helmet} from "react-helmet";
+import {position,fullname} from '../store/utility'
+import NoAccess from '../components/utility/NoAccess'
 
 class Supplier extends PureComponent {
-   
+
   componentDidMount(){
      
     this.props.fetchSupplier()
   }
 
   render() {
+       if (position() === "SuperAdmin" || position() === "Admin" || position() === "Supervisor") {
        const {suppliers} = this.props
     return (
         
@@ -23,29 +25,26 @@ class Supplier extends PureComponent {
     </Helmet>
 
  <div className="grid">
- 
- <div className="column column-7">
- <SupplierList suppliers={suppliers} />
- </div>   
 
- <div className="column column-5">
-     {/*<Text strong type="secondary">Add New Record</Text>*/}
- <CreateSupplier/>
- </div>
+             <div className="column column-12">
+
+                 <CreateSupplier suppliers={suppliers}/>
+             </div>
 
  </div>
  
 
         </div> 
-    )
-  }
-}
-
+ )
+            }
+           return <NoAccess name={fullname()}/>
+        }
+        }
 const mapStateToProps = (state)=> {
     
     return {
         suppliers: state.supplier.suppliers,
-        auth: state.auth 
+        auth: state.auth
 
     }
 }

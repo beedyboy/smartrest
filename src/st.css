@@ -1,0 +1,127 @@
+
+
+#invoice-POS{
+  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+  padding:1mm;
+  margin: 0 auto;
+  width: 76mm;
+  background: #FFF;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 900;
+  }
+
+#invoice-POS::selection {background: #f31544; color: #FFF;}
+#invoice-POS::moz-selection {background: #f31544; color: #FFF;}
+h1{
+  font-size: 1.5em;
+  color: #222;
+}
+h2{
+    font-size: .9em;
+font-weight: 900;
+}
+h3{
+  font-size: 1.2em;
+  font-weight: 300;
+  line-height: 2em;
+}
+p{
+  font-size: .9em;
+  color: #000;
+  line-height: 1.2em;
+    font-weight: 900;
+}
+
+#top, #mid,#bot{ /* Targets all id with 'col-' */
+  border-bottom: 1px dotted #EEE;
+}
+
+#top{min-height: 30px;}
+#mid{min-height: 50px;}
+#bot{ min-height: 50px;}
+
+#top .logo{
+   /*float: left;*/
+	height: 20px;
+	width: 60px;
+	/*//background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;*/
+	/*//background-size: 60px 60px;*/
+}
+.clientlogo{
+  float: left;
+	height: 60px;
+	width: 60px;
+	/*//background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;*/
+	/*//background-size: 60px 60px;*/
+  border-radius: 50px;
+}
+.info{
+  display: block;
+  /*//float:left;*/
+  margin-left: 0;
+}
+.title{
+  float: right;
+}
+.title p{text-align: right;}
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+td{
+  /*//padding: 5px 0 5px 15px;*/
+  /*//border: 1px solid #EEE*/
+}
+.tabletitle{
+  padding: 5px;
+  font-size: .7em;
+    border-bottom: none;
+    border-top: none;
+    border-bottom-style: dotted;
+font-weight: 900;
+  /*background: #EEE;*/
+}
+.service{border-bottom: 1px solid #EEE;}
+.item{width: 24mm;}
+.itemtext{font-size: .8em;
+font-weight: bolder;
+}
+.top{
+  margin-top: 5mm;
+}
+#legalcopy{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin-top: 5mm;
+font-weight: 900;
+}
+
+
+/** POS SECTION**/
+.box {
+  display: block;
+  width: 25%; 
+  background-color: gray;
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.box.green {
+  background-color: green; 
+}
+ 
+/* LIST #4 */
+.list {
+  list-style-type: none;
+  padding-left: 0;
+}
+.list li {
+  padding: 10px;
+  border-bottom: 1px solid #dddddd;
+}
+.list li:last-child {
+  border: 0;
+}
+.list li:hover {
+  background-color: #fffbc3;
+}

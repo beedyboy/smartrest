@@ -1,7 +1,7 @@
- import { notification } from 'antd';
 
 import axios from 'axios';
 import {serverUrl} from '../../Config'
+import {shopId, token} from '../utility'
 
 export const authStart =()=>{
     return (dispatch)=> {
@@ -33,31 +33,59 @@ export const checkAuthTimeout = expirationTime =>{
 }
 
 export const logout = ()=>{
-    localStorage.removeItem('user');
-    localStorage.removeItem('fullname');
-    localStorage.removeItem('position');
-    localStorage.removeItem('email'); 
-    localStorage.removeItem('token');
-    localStorage.removeItem('shop');
-    localStorage.removeItem('expirationDate');
+    
     return (dispatch) => {
-       dispatch({type:'AUTH_LOGOUT'});
+        axios.post(serverUrl+'login/logout/',{
+           
+          token: token(),
+          shopId: shopId()
+
+        })
+        .then(res=>{ 
+            // console.log(res)
+            if(res.data.status === "success"){
+           
+             
+                localStorage.removeItem('user');
+                localStorage.removeItem('fullname');
+                localStorage.removeItem('position');
+                localStorage.removeItem('email'); 
+                localStorage.removeItem('token');
+                localStorage.removeItem('shop');
+                localStorage.removeItem('expirationDate')
+                localStorage.removeItem('receiptNumber');
+                dispatch({type:'AUTH_LOGOUT'});
+             
+        }
+        else{
+
+            dispatch({type:'AUTH_LOGOUT'});
+               dispatch({type: 'CREATE_FORM_ERROR', res});
+        }
+
+
+        })
+     
     }
 }
 
 export const authLogin =(username, password)=>{
     return dispatch =>{
-        // console.log(password)
+       
        dispatch(authStart());
        axios.post(serverUrl+'login/authenticate/',{
            username:username,
            acc_password:password
-       })
+       }) 
            .then(res=>{ 
-            //    console.log(res);
-               const username = res.data.record.username;
+            //    console.log(res)
+               if(res.data.status === "green"){
+                 const username = res.data.record.username; 
                const token = res.data.record.token;
                const expirationDate = new Date(new Date().getTime()+3600 * 1000);
+               if(localStorage.getItem('token') !== null){
+                   localStorage.removeItem('token');
+               }
                localStorage.setItem('token', token);
                localStorage.setItem('position', res.data.record.position);
                localStorage.setItem('fullname', res.data.record.fullname);
@@ -66,18 +94,19 @@ export const authLogin =(username, password)=>{
                localStorage.setItem('shop', res.data.record.shopId);
                localStorage.setItem('expirationDate', expirationDate);
                dispatch(authSuccess(res.data));
-                notification.success({
-                     placement: 'topRight',
-                      top: 24,
-                    message: 'Login Message',
-                    description: res.data.msg,
-                    style: {
-                     width: 400,
-                     backgroundColor:'green',
-                        color:'white'
-                 },
-                  });
+               dispatch({type: 'SAVE_SUCCESS', res});
+                  dispatch({type: 'CREATE_SHOP', res});
                dispatch(checkAuthTimeout(3700));
+           } 
+           else if(res.data.status === "red"){
+            dispatch({type: 'CREATE_FORM_ERROR', res});
+           }
+           else{
+
+                  dispatch({type: 'CREATE_FORM_ERROR', res});
+           }
+
+
            })
            .catch(err=>{
                dispatch(authFail(err));
@@ -114,12 +143,14 @@ export const authLogin =(username, password)=>{
 export const authCheckState=()=>{ 
     return dispatch=>{
         const token = localStorage.getItem('token'); 
-        if (token === undefined){
-            dispatch(logout());
-        } else {
+        if (token === undefined || token === null){
+            // dispatch(logout());
+        } else{
 
             const expirationDate = new Date(localStorage.getItem('expirationDate'));
-            if (expirationDate <= new Date())
+        // console.log(expirationDate)
+        // console.log("NEW", new Date())
+            if (expirationDate && expirationDate <= new Date())
             {
                 dispatch(logout());
             } else {
@@ -132,6 +163,7 @@ export const authCheckState=()=>{
                 shopId:localStorage.getItem('shop'),
                 username:localStorage.getItem('user'),
                 fullname:localStorage.getItem('fullname'),
+                // role:localStorage.getItem('role').replace(/(\r\n|\n|\r)/gm, "").trim().split(','),
                 email:localStorage.getItem('acc_email')
             }
         }

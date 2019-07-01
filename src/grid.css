@@ -1,0 +1,66 @@
+/* Prevents Padding or borders from changing box size */
+html { box-sizing: border-box; }
+*,
+*:before,
+*:after { box-sizing: inherit; }
+.mother { position: relative; }
+.mother::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+/* Columns */
+.child {
+  width: 100%;
+  float: left;
+  padding: 5px; 
+}
+/* Small Devices */
+@media (min-width: 576px) {
+  .small-1 {width: 8.33%;}
+  .small-2 {width: 16.66%;}
+  .small-3 {width: 25%;}
+  .small-4 {width: 33.33%;}
+  .small-5 {width: 41.66%;}
+  .small-6 {width: 50%;}
+  .small-7 {width: 58.33%;}
+  .small-8 {width: 66.66%;}
+  .small-9 {width: 75%;}
+  .small-10 {width: 83.33%;}
+  .small-11 {width: 91.66%;}
+  .small-12 {width: 100%;}
+}
+/* Medium Devices */
+@media (min-width: 768px) {
+ .med-1 {width: 8.33%;}
+  .med-2 {width: 16.66%;}
+  .med-3 {width: 25%;}
+  .med-4 {width: 33.33%;}
+  .med-5 {width: 41.66%;}
+  .med-6 {width: 50%;}
+  .med-7 {width: 58.33%;}
+  .med-8 {width: 66.66%;}
+  .med-9 {width: 75%;}
+  .med-10 {width: 83.33%;}
+  .med-11 {width: 91.66%;}
+  .med-12 {width: 100%;}
+}
+/* Large Devices */
+@media (min-width: 992px) {
+    /*.mother {*/
+    /*margin-bottom: 7px;*/
+/*}*/
+
+  .large-1 {width: 7.41666%;}
+  .large-2 {width: 14.8332%;}
+  .large-3 {width: 24.24998%;}
+  .large-4 {width: 32.66664%;}
+  .large-5 {width: 41.0833%;}
+  .large-6 {width: 49.49996%;}
+  .large-7 {width: 57.91662%;}
+  .large-8 {width: 66.33328%;}
+  .large-9 {width: 74.74994%;}
+  .large-10 {width: 83.1666%;}
+  .large-11 {width: 91.58326%;}
+  .large-12 {width: 100%;}
+}

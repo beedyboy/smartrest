@@ -8,7 +8,7 @@ import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
 
-const BarList = ({bar, click}) =>{
+const BarList = React.memo(({bar, role, click}) =>{
 
 const columns = [{
         title: 'Product',
@@ -31,11 +31,14 @@ const columns = [{
         key: 'qty',
       }
     , {
-      title: 'Edit',
+      title: 'Action',
       dataIndex: 'operation',
       render: (text, record) => (
         bar.length >= 1
           ? (
+              <React.Fragment>
+                     {(role && role.indexOf("editMenu") !== -1 )?
+         (
            <Button type="primary" onClick={() =>
             {
                  const data = {
@@ -49,26 +52,26 @@ const columns = [{
             }
 
             } >
-               <Icon type="edit"/> </Button>
+               <Icon type="edit"/> </Button> )
+                         : 'No access'}
+              </React.Fragment>
 
           ) : null
       ),
     }];
 
-
     return (
-
 
        <div>
 
-   <Table rowKey="id" dataSource={bar} columns={columns}  {...TableConfig2}  bordered
+   <Table rowKey="id" dataSource={bar} columns={columns}  {...TableConfig2} scroll={{ x: 400 }}   bordered
     title={() =>  <Text strong type="primary">Bar </Text>}
  />
        </div>
   )
 
 
-}
+});
 
 
 export default BarList;

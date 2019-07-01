@@ -2,6 +2,7 @@
  * Created by wawooh on 4/17/19.
  */
         import React, { PureComponent } from 'react'
+import {connect} from 'react-redux'
 import {Styles} from '../Config'
 import {  Typography} from 'antd';
         import {Helmet} from "react-helmet";
@@ -11,54 +12,34 @@ import {  Typography} from 'antd';
 
 
 const {  Text } = Typography;
-// const formItemLayout = {
-//   labelCol: {
-//     xs: { span: 24 },
-//     sm: { span: 8 },
-//   },
-//   wrapperCol: {
-//     xs: { span: 24 },
-//     sm: { span: 12 },
-//   },
-// };
 class Acquisition extends PureComponent {
-        state = {
-            id:'',
-            qty:'',
-            item_name: '',
-            cost_price: '',
-            supplierId:'',
-            purchased_date: '',
-            transaction_type:'',
-            create:true
-        }
-
-
 
 
         render() {
-            // console.log(this.props)
-        // const {purchases,suppliers} = this.props
+
+            const {role} = this.props
         return (
 
 
 <React.Fragment>
 <Helmet>
-       <title>Purchases | Raw Material</title>
-       <meta name="description" content="Purchases Management" />
+       <title>Acquisition | Allocation</title>
+       <meta name="description" content="Acquisition | Allocation" />
          </Helmet>
- <div className="grid" style={Styles.div}>
+ <div className="grid">
       <div className="column column-12" style={Styles.div}>
-    <Allocate/>
+    <Allocate role={role}  />
      </div>
 
 
 
  </div>
 
-
+ {(role && role.indexOf("addFinished") !== -1 )?
+         (
 
  <div className="grid" style={Styles.div}>
+
 
  <div className="column offset-3 column-6">
      <Text type="primary" strong>Allocate Quantity to Finished Product</Text>
@@ -67,10 +48,9 @@ class Acquisition extends PureComponent {
 
  </div>
 
-
  </div>
 
-
+         ): ''}
 </React.Fragment>
 
         )
@@ -78,22 +58,19 @@ class Acquisition extends PureComponent {
         }
 
 
-        // const mapStateToProps = (state)=> {
-        // // console.log(state)
-        // return {
-        // purchases: state.inventory.purchases,
-        // suppliers: state.supplier.suppliers
-        // }
-        // }
-        // const mapDispatchToProps = (dispatch) => {
-        // return {
-        // createPurchases:(data)=>dispatch(actions.createPurchases(data)),
-        // updatePurchases:(data)=>dispatch(actions.updatePurchases(data)),
-        // fetchPurchases: ()=> dispatch(actions.fetchPurchases()),
-        // fetchSupplier: ()=> dispatch(fetchSupplier())
-        // }
-        // }
-        //
-        // export default
-        // connect(mapStateToProps, mapDispatchToProps)(Acquisition);
-export default Acquisition
+
+const mapStateToProps = (state)=> {
+
+    return {
+        auth: state.auth,
+      role: state.auth.role
+    }
+}
+const mapDispatchToProps = (dispatch) => {
+  return {
+
+  }
+}
+        export default
+        connect(mapStateToProps, mapDispatchToProps)(Acquisition);
+// export default Acquisition

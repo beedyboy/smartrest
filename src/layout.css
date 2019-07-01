@@ -342,3 +342,26 @@ Applying this formula for each of the 12 columns results in the following CSS.
 {
   margin-bottom: 5%  !important;
 }
+.global-header-index-trigger {
+    height: 64px;
+    padding: 22px 24px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all .3s,padding 0s;
+}
+.anticon {
+    display: inline-block;
+    color: inherit;
+    font-style: normal;
+    line-height: 0;
+    text-align: center;
+    text-transform: none;
+    vertical-align: -.125em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+.global-header-index-right {
+    float: right;
+    height: 100%;
+    overflow: hidden;
+}
