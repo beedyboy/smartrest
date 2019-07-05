@@ -49,6 +49,7 @@ render(){
                 </p>
 
                  <p>Invoice: {soldData.invoice_number} </p>
+                 <p>Order Number: #{soldData.id} </p>
                     {soldData.ord_type === "Take Out"?
                         <p>  Order:  {soldData.ord_type}  </p>
 

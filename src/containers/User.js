@@ -65,60 +65,7 @@ class User extends PureComponent {
         date_joined:date
     })
   }
-    // handleChangeUser=(value) => {
-    //   this.setState({
-    //     user:value
-    //   })
-    // }
-    // handleChangeSales=(value) => {
-    //   this.setState({
-    //     sales:value
-    //   })
-    // }
-    //
-    // handleChangeMenu=(value) => {
-    //   this.setState({
-    //     menu:value
-    //   })
-    // }
-    //
-    //
-    // handleChangePurchases=(value) => {
-    //   this.setState({
-    //     purchases:value
-    //   })
-    // }
-    //
-    // handleChangeAcquisition=(value) => {
-    //   this.setState({
-    //    acquisition:value
-    //   })
-    // }
-    //
-    // handleChangeSupplier=(value) => {
-    //   this.setState({
-    //     supplier:value
-    //   })
-    // }
-    //
-    // handleChangeHall=(value) => {
-    //   this.setState({
-    //     hall:value
-    //   })
-    // }
-    // handleChangeTable=(value) => {
-    //   this.setState({
-    //     table:value
-    //   })
-    // }
-    //
-    //
-    // handleChangeSeat=(value) => {
-    //   this.setState({
-    //     seat:value
-    //   })
-    // }
-
+    
     handlePosition=(value) => {
       this.setState({
         position:value
@@ -164,7 +111,12 @@ class User extends PureComponent {
         handleDelete = (id) => {
             this.props.deleteUser(id)
         }
+    
+        handleLogOutUser=(id)=>{
+          
+            this.props.logUserOut(id)
 
+      }
 
   componentDidMount(){
      
@@ -206,7 +158,7 @@ class User extends PureComponent {
 
             <TabPane tab={<span><Icon type="team" />User Record </span>}   key="2">
 
-       <UserList users={users && users} edit={this.handleEdit} del={this.handleDelete} role={role} />
+       <UserList users={users && users} edit={this.handleEdit} del={this.handleDelete} logout={this.handleLogOutUser} role={role} />
 
 
     </TabPane>
@@ -238,6 +190,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchUsers: ()=> dispatch(actions.fetchUsers()),
     createUser: (user) => dispatch(actions.createUser(user)),
     updateUser: (user) => dispatch(actions.updateUser(user)),
+    logUserOut: (id) => dispatch(actions.logUserOut(id)),
     deleteUser: (id) => dispatch(actions.deleteUser(id))
 }
 }

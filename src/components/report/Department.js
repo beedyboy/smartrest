@@ -6,15 +6,17 @@
  */
 
 import React from 'react'
-import { Typography,Table, Radio, Row, Col } from 'antd';
-import {TableConfig2} from '../../Config'
+import { Typography,Table, Radio, Row, Col, Tag  } from 'antd';
+import {TableConfig2} from '../../Config' 
 const {  Text } = Typography;
-
-
+ 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Department = ({dept, change, settings}) =>{
-
+  var r = dept && dept.map(a=> a.price)
+  let s = r && r.length > 0 && r.reduce((acc,  val)=> {
+    return acc + val;
+  }); 
 const columns = [
     {
         title: 'Menu Name',
@@ -55,6 +57,7 @@ const columns = [
       <Col span={24}>
    <Table rowKey="key" dataSource={dept} columns={columns}  {...TableConfig2}   bordered
     title={() =>  <Text strong type="primary">Department Analysis</Text>}
+    footer={() =>  <Text strong type="primary" style={{fontWeight:'bolder',  marginBottom: '10px',marginLeft: '70%'}}> Total Amount <Tag color="geekblue" >{ s?  s : ' 0'} {settings.currency}</Tag></Text>}
  />
 
 {/* <Table rowKey="id" dataSource={summary} columns={columns} showHeader={false}  pagination={false}   bordered */}

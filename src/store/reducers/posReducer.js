@@ -17,6 +17,7 @@ const initState = {
     savedOrder:[],
     Order:[],
     plateArray:[],
+    plateDetail:[],
     OrderPlateItem:[],
     receiptNumber:''
 }
@@ -32,6 +33,13 @@ const posReducer =(state=initState, action) => {
       var newMenu = action.res.data.data;
       return updateObject(state,{ 
                 menu: newMenu
+        })
+        
+        
+        case 'FETCH_PLATE_ITEM':
+      var newplateDetail = action.res.data.data;
+      return updateObject(state,{ 
+        plateDetail: newplateDetail
         })
         
         case 'PLATE_ITEM_DATA':

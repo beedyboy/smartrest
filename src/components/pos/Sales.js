@@ -156,8 +156,8 @@ class Sales extends PureComponent {
             localQty:Qty,
             localOrder:local
         });
-        console.log("DATA", this.state.localOrder)
-        console.log("QTY", this.state.Qty)
+        // console.log("DATA", this.state.localOrder)
+        // console.log("QTY", this.state.Qty)
     }
     makePlate =(e) => {
         // console.log(this.state.localOrder) 
@@ -251,10 +251,10 @@ class Sales extends PureComponent {
         this.props.saveOrder(this.state)
     }
 
-    handlegetPlate = (e) => {
-        e.preventDefault();
-        this.props.getPlate()
-    }
+    // handlegetPlate = (plate,invoice) => {
+        
+    //     this.props.getPlate()
+    // }
 
     emptyCart = () => {
         this.props.emptyCart()
@@ -307,7 +307,7 @@ handlePageChange = value => {
          }
 
     render() {
-     const {waiters,  data, menu, allMenuList, summary, OrderPlateItem,  htables, settings} = this.props
+     const {waiters,  data, menu, summary, OrderPlateItem,  htables, settings} = this.props
          const { fetching, localOrder } = this.state;
      const enabled = data && data.length > 0;
      const plated = itemCount && itemCount > 0 && localOrder.length > 0;  
@@ -587,7 +587,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchMenu: (value)=> dispatch(actions.fetchMenu(value)),
       fetchAllMenu: ()=> dispatch(fetchMenu()),
       getCartItem: ()=> dispatch(actions.getCartItem()),
-      getPlate: ()=> dispatch(actions.getPlate()),
+    //   getPlate: ()=> dispatch(actions.getPlate()),
       addToCart: (data)=> dispatch(actions.addToCart(data)),
       editPlateItem: (plate)=> dispatch(actions.editPlateItem(plate)),
       addBaseToCart: (order, quantity)=> dispatch(actions.addBaseToCart(order, quantity)),

@@ -3,6 +3,7 @@
  */
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
+import {  Button, Icon} from 'antd';
 import ReactToPrint from "react-to-print";
  import {getShopDetails} from '../../store/actions/shopActions'
  import * as actions from '../../store/actions/posActions'
@@ -44,7 +45,7 @@ class Print extends PureComponent {
         <React.Fragment>
 
 <ReactToPrint
-          trigger={() => <button>Print this out!</button>}
+          trigger={() => <Button type="ghost"><Icon  type="printer" />Print this out!</Button>}
           content={() => this.r}
         />
             <br />

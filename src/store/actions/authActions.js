@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import {serverUrl} from '../../Config'
-import {shopId, token} from '../utility'
+import {shopId, token, fullname} from '../utility'
 
 export const authStart =()=>{
     return (dispatch)=> {
@@ -38,6 +38,7 @@ export const logout = ()=>{
         axios.post(serverUrl+'login/logout/',{
            
           token: token(),
+          fullname: fullname(),
           shopId: shopId()
 
         })

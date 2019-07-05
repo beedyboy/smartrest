@@ -57,7 +57,7 @@ p{
 }
 .info{
   display: block;
-  /*//float:left;*/
+  padding: 5px;
   margin-left: 0;
 }
 .title{
@@ -79,12 +79,18 @@ td{
     border-top: none;
     border-bottom-style: dotted;
 font-weight: 900;
+margin-bottom: 2px;
   /*background: #EEE;*/
 }
-.service{border-bottom: 1px solid #EEE;}
-.item{width: 24mm;}
-.itemtext{font-size: .8em;
-font-weight: bolder;
+.service{  
+  padding: 5px;
+  border-bottom: 1px solid #EEE;
+}
+.item{width: 24mm; padding: 2px;}
+.itemtext{
+  padding: 2px;
+  font-size: .8em;
+  font-weight: bolder;
 }
 .top{
   margin-top: 5mm;

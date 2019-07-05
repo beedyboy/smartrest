@@ -40,7 +40,7 @@ export const addBaseToCart = (localOrder,localQty) => {
           shopId: shopId()
         })
          .then(res => {
-           console.log(res)
+          //  console.log(res)
            if(res.data.status === "error"){
                  dispatch({type: 'SAVE_ERROR', res});
            }
@@ -122,17 +122,18 @@ export const getCartItem = () => {
     }
 }
 
-export const getPlate = () => {
+export const getPlate = (plate,invoice) => {
     return (dispatch) => {
        axios.get( serverUrl + 'pos/getPlate',{
         params : {
             shopId: shopId(),
-            invoice:invoice()
-          }
+            plate:plate,      
+            invoice:invoice      
+              }
        })
          .then(res => {
             //  console.log(res)
-        dispatch({type: 'FETCH_CART_ITEM', res});
+        dispatch({type: 'FETCH_PLATE_ITEM', res});
         })
 
     }
@@ -396,7 +397,7 @@ export const getInvoiceDetails = (invoice) => {
        })
          .then(res => {
 
-             // console.log(res)
+            //  console.log(res)
         dispatch({type: 'FETCH_INVOICE_DETAILS', res});
         })
 

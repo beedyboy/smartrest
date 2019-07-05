@@ -114,14 +114,14 @@ class Receivable extends PureComponent {
              return <Redirect to={'/order/'+d} />
             }
           }
-          handlePayAll=(e)=> {
+          handlePayAll=()=> {
 
-              const value = e.target.value
-                   this.setState({
-                       ...this.state,
-                       kitchen:value
-                   })
-                this.props.payAllBalances(value)
+              // const value = e.target.value
+              //      this.setState({
+              //          ...this.state,
+              //          kitchen:value
+              //      })
+                this.props.payAllBalances('All')
 
 }
           fetchInvoice = (value) => {
@@ -262,7 +262,7 @@ class Receivable extends PureComponent {
 
           </span>
 
-       <Button type="primary" style={{ marginLeft: 10 }} onClick={()=>this.showBulk()}>
+       <Button type="primary" style={{ marginLeft: 10 }} onClick={this.handlePayAll}>
          <Icon type="eye" />Pay All</Button>
 
 

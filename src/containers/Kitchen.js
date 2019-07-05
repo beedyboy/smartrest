@@ -5,7 +5,7 @@ import React, { PureComponent, Suspense } from 'react'
 import {getSystemSettings} from '../store/actions/settingsActions'
  import * as actions from '../store/actions/posActions'
  import PageLoading from '../components/loading/PageLoading'
- import OrderDetails from '../components/pos/OrderDetails'
+ import PlateDetails from '../components/pos/PlateDetails'
  import Basket from '../components/kitchen/Basket'
 import {connect} from 'react-redux'
 import {Helmet} from "react-helmet";
@@ -29,11 +29,11 @@ class Kitchen extends PureComponent {
             invoice: '',
             modal:   false
         }
-        showModal = (value) => {
-          this.props.fetchOrderByInvoice(value)
+        showModal = (invoice,plate) => {
+          this.handlePlate(plate,invoice)
           this.setState({
            ...this.state,
-              receipt: value,
+              receipt: invoice,
             modal: true
           });
         }
@@ -54,7 +54,10 @@ class Kitchen extends PureComponent {
                 message.error('Transaction cancelled.');
           }
 
-
+          handlePlate = (plate,invoice) => {
+        
+            this.props.getPlate(plate,invoice)
+        }
     handleApprove=(menu_id,accept,invoice,base)=>{
         this.props.kitchenApprove(menu_id,accept,invoice,base)
     }
@@ -74,7 +77,7 @@ clearInterval(this.intervalId);
 
   render() {
      if (position() === "SuperAdmin" || position() === "Admin" || position() === "Supervisor"  || position() === "Bartender" || position() === "KitchenAttendant") {
-         const {kitchenReceivable, settings,orderDetails,role} = this.props
+         const {kitchenReceivable, settings, plateDetail} = this.props
 
         let settingsData = []
   settings && settings.forEach(function(val,index) {
@@ -106,7 +109,7 @@ clearInterval(this.intervalId);
          render: (record)=>  (
                 <React.Fragment>
 
-              <Button type="primary" onClick={() =>this.showModal(record.invoice)}>
+              <Button type="primary" onClick={() =>this.showModal(record.invoice, record.plate)}>
                   <Icon type="eye" />{record.invoice}</Button>
                 </React.Fragment>
            )
@@ -178,52 +181,7 @@ clearInterval(this.intervalId);
   </Tabs>
    </div>
     
-    {/* <div className="child large-12 med-12 small-12">
-    <table>
-    <thead>
-                         <tr className="tabletitle" key={shortId.generate()}>
-                            <td className="item"><h2>S/N</h2></td>
-                            <td className="item"><h2>Invoice</h2></td>
-                            <td className="item"><h2>Item</h2></td>
-                            <td className="item"><h2>Qty</h2></td>
-                            <td className="item"><h2>Amount</h2></td>
-                            <td className="item"><h2>Action</h2></td>
-                          </tr>
-                       </thead>
-
-                       <tbody>
-                       {kitchenReceivable.map((d)=> {
-                         i++
-                           return (
-                               <tr className="service" key={shortId.generate()}>
-                                 <td>
-                                   {i}
-                                 </td>
-                                <td className="">
-                                    <p className="">{d.invoice}</p>
-                                </td>
-                                <td className="">
-                                    <p className="">{d.menu_name}</p>
-                                </td>
-                        <td className="">
-                            <p className="itemtext">{d.qty}</p>
-                        </td>
-
-
-                        <td className="">
-                     <p className="">{d.total}</p>
-                 </td>
-                 
-                 <td className="">
-                     <p className=""><Button onClick={()=>this.handleApprove(d.menu_id,d.accept, d.invoice,d.base)}>Approve {d.base}</Button></p>
-                 </td>
-                                            </tr>
-                           )
-                       })}
-                       </tbody>
-    </table>
-
-    </div> */}
+    
         </div>
 
 
@@ -235,7 +193,7 @@ clearInterval(this.intervalId);
            onCancel={()=>this.handleOk('modal')}
         >
         <Suspense fallback={<PageLoading/>}>
-<OrderDetails  role={role}  redirect={this.setRedirect} order={orderDetails} currency={settingsData.currency} invoice={this.state.receipt}/>
+<PlateDetails  order={plateDetail} currency={settingsData.currency} invoice={this.state.receipt}/>
 
 </Suspense>
 
@@ -258,7 +216,8 @@ const mapStateToProps = (state)=> {
          receivable: state.pos.receivable,
          kitchenReceivable: state.pos.kitchenReceivable,
         settings: state.setting.settings,
-        orderDetails: state.pos.orderDetails
+        orderDetails: state.pos.orderDetails,
+        plateDetail: state.pos.plateDetail
 
 
     }
@@ -268,6 +227,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchReceivable: ()=> dispatch(actions.fetchReceivable()),
         fetchKitchenReceivable: ()=> dispatch(actions.fetchKitchenReceivable()),
         kitchenApprove:(menu_id,accept, invoice, base)=>dispatch(actions.kitchenApprove(menu_id,accept,invoice,base)),
+        getPlate: (plate,invoice)=> dispatch(actions.getPlate(plate,invoice)),
         getSystemSettings:(data)=>dispatch(getSystemSettings()),
         fetchOrderByInvoice: (invoice)=> dispatch(actions.fetchOrderByInvoice(invoice))
 

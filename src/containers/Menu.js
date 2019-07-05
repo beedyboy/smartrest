@@ -125,7 +125,7 @@ if(this.props.result.success !== true && this.props.result.error !== true) {
                     item: record.item,
                     price: record.price,
                     catId: record.catId,
-                    create: false,
+                    create: false
                 };
               this.handleEdit(data)
               }}><Icon type="edit" />Edit</Button>

@@ -3,7 +3,7 @@ import { Typography,Table, Divider, Icon, Button } from 'antd';
 import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
-const UserList = React.memo(({users, edit, del, role}) =>{
+const UserList = React.memo(({users, edit, del, logout, role}) =>{
   const columns = [
       {
     title: 'Full Name',
@@ -32,18 +32,34 @@ const UserList = React.memo(({users, edit, del, role}) =>{
     dataIndex: 'created_at',
     key: 'created_at',
   },
+  {
+    title: 'Status', 
+    key: 'token',
+    render: (record)=>(
+      record.token?  
+  
+       <React.Fragment>
+        <Text strong type="primary">Logged In </Text> 
+          <Button onClick={() =>
+            {
+              logout(record.id)
+            }}> <Icon type="logout" />Logout</Button>
+       </React.Fragment>
+      : "Logged Out"
+    )
+  },
       {
     title: 'Action',
     key: 'operation',
     fixed: 'right',
     width: 260,
-   render: (text, record) => (
+   render: (text, record) =>   (
+    
+        <React.Fragment>
 
-       <span>
-
-           <Button type="danger" onClick={() =>
+            <Button type="danger" onClick={() =>
             {
-                   const data = {
+                    const data = {
                         id: record.id,
                         fullname: record.fullname,
                         username: record.username,
@@ -57,21 +73,20 @@ const UserList = React.memo(({users, edit, del, role}) =>{
             }
 
             } >
-             <Icon type="edit"/>Edit  </Button>
+              <Icon type="edit"/>Edit  </Button>
 
-
-        <React.Fragment>
-        <Divider type="vertical" /> <Button onClick={() =>
+               
+        <Divider type="vertical" />
+         <Button onClick={() =>
             {
                   del(record.id)
             }}> <Icon type="user-delete" />Delete</Button>
-        </React.Fragment>
 
-       </span>
-
-
-  ),
-  },
+         
+     </React.Fragment> 
+     
+       ),
+  }
 ] 
 
     return (

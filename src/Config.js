@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const serverUrl = 'http://192.168.0.5/smart/'
+export const serverUrl = 'http://localhost/project/php/smart/'
 
 export  const TableConfig = {
     pagination : {

@@ -7,6 +7,7 @@ import React from 'react'
 import { CSVLink } from "react-csv";
 import { Typography,Table,Icon, Button, Row, Col, Tag } from 'antd';
 import {TableConfig2, Styles} from '../../Config'
+import ReactToPrint from "react-to-print";
 const {  Text } = Typography;
  
 const SalesReportTable = React.memo(({report, total, trail, settings}) =>{
@@ -73,7 +74,12 @@ const headers = [
 
  {report &&report? (
      <React.Fragment>
- <Button type="primary" style={Styles.button}  > <Icon type="printer" />Print</Button>
+
+<ReactToPrint
+          trigger={() =>  <Button type="primary" style={Styles.button}  ><Icon  type="printer" />Print</Button>}
+          // content={() => this.r}
+        />
+ {/* <Button type="primary" style={Styles.button}  > <Icon type="printer" />Print</Button> */}
            <Button type="primary" onClick={trail} style={Styles.color.geekblue}><Icon type="dot-chart" />Show Trail</Button>
 
 <CSVLink
@@ -95,11 +101,10 @@ const headers = [
       <Col span={24}>
    <Table rowKey="key" dataSource={report} columns={columns}  {...TableConfig2}   bordered
     title={() =>  <Text strong type="primary">Report Sheet </Text>}
+    footer={() =>  <Text strong type="primary" style={{fontWeight:'bolder' , marginLeft: '30%'}}> Total Amount <Tag color="geekblue" >{ total?  total : ' 0'} {settings.currency}</Tag></Text>}
+    // ref={el => (this.r = el)} 
  />
-  <div style={{marginLeft:'120px', fontWeight:'bolder'}}>
-    Total Amount is <Tag color="geekblue" >{total? total : 0} {settings.currency} </Tag>
-  
-    </div>   
+    
      </Col>
   </Row>
        </React.Fragment>
