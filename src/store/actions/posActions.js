@@ -73,11 +73,12 @@ export const fetchWaiters = () => {
     }
 }
 
-export const fetchMenu = (value) => {
+export const fetchMenu = (id,value) => {
     return (dispatch) => {
        axios.get( serverUrl + 'pos/fetchMenu',{
         params : {
             shopId: shopId(),
+            id:id,
             value:value
           }
        })

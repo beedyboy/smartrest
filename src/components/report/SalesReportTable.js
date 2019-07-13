@@ -10,13 +10,24 @@ import {TableConfig2, Styles} from '../../Config'
 import ReactToPrint from "react-to-print";
 const {  Text } = Typography;
  
-const SalesReportTable = React.memo(({report, total, trail, settings}) =>{
+const SalesReportTable = React.memo(({report, total, trail, settings, showModal}) =>{
  
 const columns = [
     {
-        title: 'Invoice Number',
-        dataIndex: 'invoice_number',
+        title: 'Invoice Number', 
         key: 'invoice_number',
+        render: (record)=>  (
+               <React.Fragment>
+
+             <Button type="primary" onClick={() =>showModal(record.id, record.invoice_number)}>
+                 <Icon type="eye" />{record.invoice_number}</Button>
+               </React.Fragment>
+          )
+      },
+      {
+        title: 'Order Number',
+        dataIndex: 'order_number',
+        key: 'order_number',
       },
       {
         title: 'Cashier',
@@ -46,6 +57,10 @@ const headers = [
     {
         label: 'Invoice Number',
         key: 'invoice_number',
+      },
+      {
+        label: 'Order Number', 
+        key: 'order_number',
       },
       {
         label: 'Cashier',

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import {serverUrl} from '../../Config'
 import {shopId, token} from '../utility'
+
 export const createProduct = (data) => {
 
     return (dispatch, getState) => {
@@ -17,7 +18,7 @@ export const createProduct = (data) => {
                dispatch({type: 'CREATE_FORM', res});
                 dispatch({type: 'SAVE_SUCCESS', res});
                 dispatch(fetchBar());
-            dispatch(fetchLocal());
+            // dispatch(fetchLocal());
             dispatch(fetchContinental());
            }
            else {
@@ -32,45 +33,18 @@ export const createProduct = (data) => {
 
     }
 }
+ 
 
-export const updateProduct = (data) => {
-    return (dispatch, getState) => {
-        //make async call to database
-         axios.post(serverUrl + 'product/update/',{
-           ...data,
-             token:token()
-        })
-         .then(res => {
-           if(res.data.status === "error"){
-               dispatch({type: 'CREATE_FORM_ERROR', res});
-            dispatch({type: 'SAVE_ERROR', res});
-           }
-           else{
-                  dispatch({type: 'SAVE_SUCCESS', res});
-                  dispatch({type: 'CREATE_FORM', res});
-                dispatch(fetchBar());
-            dispatch(fetchLocal());
-            dispatch(fetchContinental());
-           }
-        }).catch((err) => {
-            dispatch({type: 'CREATE_FORM_ERROR', err});
-            dispatch({type: 'SAVE_ERROR', err});
-        })
-
-
-    }
-}
-
-export const fetchLocal = () => {
+export const getKitchenFromMenu = () => {
     return (dispatch) => {
-       axios.get( serverUrl + 'product/getDepartmentProducts',{
+       axios.get( serverUrl + 'kitchen/getKitchenFromMenu',{
         params : {
-            shopId: shopId(),
-            kitchen:'Local'
+            shopId: shopId() 
           }
        })
          .then(res => {
-        dispatch({type: 'FETCH_LOCAL', res});
+          //  console.log("KITCHEN", res)
+        dispatch({type: 'KITCHEN_MENU_CATEGORY', res});
         })
 
     }

@@ -7,7 +7,7 @@ import {connect} from 'react-redux'
 import Dashboard from './containers/Dashboard'
 import User from './containers/User'
 import Hall from './containers/Hall'
-import ProductMenu from './containers/Product'
+// import ProductMenu from './containers/Product'
 import Supplier from './containers/Supplier'
 import SignIn from './components/auth/SignIn'
 import Purchases from './containers/Purchases'
@@ -54,7 +54,7 @@ class App extends PureComponent {
                     <PrivateRoute exact path='/user' component={User}/>
                     <PrivateRoute exact path='/supplier' component={Supplier}/>
                     <PrivateRoute exact path='/menu' component={Menu}/>
-                    <PrivateRoute exact path='/product' component={ProductMenu}/>
+                    {/* <PrivateRoute exact path='/product' component={ProductMenu}/> */}
                     <PrivateRoute exact path='/purchases' component={Purchases}/>
                     <PrivateRoute exact path='/acquisition' component={Acquisition}/>
                     <PrivateRoute exact path='/pos' component={POS}/>

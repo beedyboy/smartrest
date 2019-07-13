@@ -6,7 +6,7 @@ import {shopId} from '../utility'
 
 export const salesReport = (data) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/salesReport', {
+       axios.get( serverUrl + 'report/salesReport', {
               params : {
                   ...data,
             shopId: shopId()
@@ -23,7 +23,7 @@ export const salesReport = (data) => {
 
 export const departmentReport = (data) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/departmentReport', {
+       axios.get( serverUrl + 'report/departmentReport', {
               params : {
                   ...data,
             shopId: shopId()
@@ -40,7 +40,7 @@ export const departmentReport = (data) => {
 
 export const salesTrailReport = (data) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/salesTrailReport', {
+       axios.get( serverUrl + 'report/salesTrailReport', {
               params : {
                   ...data,
             shopId: shopId()
@@ -56,7 +56,7 @@ export const salesTrailReport = (data) => {
 
 export const staffReport = (data) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/staffReport', {
+       axios.get( serverUrl + 'report/staffReport', {
               params : {
                   ...data,
             shopId: shopId()

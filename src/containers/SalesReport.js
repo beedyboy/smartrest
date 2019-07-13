@@ -4,14 +4,16 @@
 import React, { PureComponent,Suspense,lazy } from 'react'
 import moment from 'moment';
 import * as actions from '../store/actions/reportActions'
+import * as posActions from '../store/actions/posActions'
 import {getSystemSettings} from '../store/actions/settingsActions'
  import PageLoading from '../components/loading/PageLoading'
 import SalesReportTable from '../components/report/SalesReportTable'
 import SalesTrail from '../components/report/SalesTrail'
-import {  Form, DatePicker, Button, Icon} from 'antd';
+import {  Form, DatePicker, Button, Icon, Modal} from 'antd';
 import {connect} from 'react-redux'
 import {Helmet} from "react-helmet";
-import {position,fullname} from '../store/utility'
+import OrderDetails from '../components/pos/OrderDetails'
+import {position, fullname} from '../store/utility'
 import NoAccess from '../components/utility/NoAccess'
 
 
@@ -23,12 +25,32 @@ state={
     startDate:moment().format('YYYY-MM-DD'),
     endDate:moment().format('YYYY-MM-DD'),
     dept:'Total',
-    trail:false
+    trail:false,
+    id:'',
+    receipt: '',
+    modal:false
 }
 
 componentDidMount(){
       this.props.getSystemSettings()
 }
+ showModal = (id,value) => {
+          this.props.fetchOrderByInvoice(value)
+          this.setState({
+           ...this.state,
+              receipt: value,
+              id:id,
+            modal: true
+          });
+        }
+
+        handleOk = (field) => {
+          this.setState({
+                    ...this.state,
+            [field]:false
+
+          });
+        }
 handleChangeStartDate = (evt, date) => {
     // console.log(date)
     this.setState({
@@ -67,7 +89,7 @@ showTrail = (e) => {
 }
   render() {
  if (position() === "SuperAdmin" || position() === "Admin" || position() === "Supervisor" || position() === "Cashier") {
-    const {sales, salesTotal, departments, salesTrails, settings} = this.props
+    const {sales, salesTotal, departments, salesTrails, settings,orderDetails} = this.props
 
      let settingsData = []
   settings && settings.forEach(function(val,index) {
@@ -135,7 +157,7 @@ showTrail = (e) => {
  </div>
             <div className="grid">
                 <div className="column column-6">
-                  <SalesReportTable report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
+                  <SalesReportTable showModal={this.showModal} report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
                 </div>
 
             <div className="column column-6">
@@ -161,7 +183,22 @@ showTrail = (e) => {
                 </div>
      </div>
 
-        </React.Fragment>
+          <React.Fragment>
+          <Modal
+                    title="Order Details"
+                    visible={this.state.modal}
+                    onOk={()=>this.handleOk('modal')}
+                     onCancel={()=>this.handleOk('modal')}
+                  >
+                  <Suspense fallback={<PageLoading/>}>
+          <OrderDetails  order={orderDetails} currency={settings.currency} invoice={this.state.receipt}/>
+          
+          </Suspense>
+          
+                  </Modal>
+                  </React.Fragment>
+                   </React.Fragment>
+       
    )
             }
            return <NoAccess name={fullname()}/>
@@ -176,6 +213,7 @@ const mapStateToProps = (state)=> {
         salesTotal: state.report.salesTotal,
         salesTrails:state.report.salesTrails,
         departments: state.report.departments,
+        orderDetails: state.pos.orderDetails,
         auth: state.auth
 
     }
@@ -183,6 +221,7 @@ const mapStateToProps = (state)=> {
 const mapDispatchToProps = (dispatch) => {
   return {
 getSystemSettings:(data)=>dispatch(getSystemSettings()),
+fetchOrderByInvoice: (invoice)=> dispatch(posActions.fetchOrderByInvoice(invoice)),
     salesReport: (data)=> dispatch(actions.salesReport(data)),
       departmentReport: (data)=> dispatch(actions.departmentReport(data)),
       salesTrailReport:(data)=>dispatch(actions.salesTrailReport(data))

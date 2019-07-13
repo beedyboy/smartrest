@@ -177,8 +177,8 @@ class Receivable extends PureComponent {
       },
       {
         title: 'Order Number',
-        dataIndex: 'id',
-        key: 'id',
+        dataIndex: 'order_number',
+        key: 'order_number',
       },
       {
         title: 'Amount (' +settings.currency+')',

@@ -1,23 +1,26 @@
 {
   "name": "smartrestaurant",
-  "version": "1.8.9",
+  "version": "2.0.0",
   "homepage": "http://192.168.0.5/smartrest/",
   "private": true,
   "dependencies": {
-    "axios": "^0.18.0",
-    "core-decorators": "^0.20.0",
+    "antd": "^3.20.1",
+    "axios": "^0.19.0",
+    "core-js": "^3.1.4",
+    "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-csv": "^1.1.1",
-    "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.6",
-    "react-helmet": "^5.2.0",
-    "react-redux": "^7.0.3",
-    "react-redux-datatable": "^2.4.3",
-    "react-scripts": "2.1.8",
-    "react-simple-animate": "^3.2.0",
-    "redux": "^4.0.1",
+    "react-helmet": "^5.2.1",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.0.1",
+    "react-simple-animate": "^3.2.1",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0",
     "shortid": "^2.2.14",
-    "styled-components": "^4.3.2"
+    "victory": "^32.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,14 +31,20 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "devDependencies": {
-    "react-to-print": "^2.1.2",
-    "redux-devtools-extension": "^2.13.8"
+    "react-to-print": "^2.1.3"
   }
 }

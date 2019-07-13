@@ -5,7 +5,7 @@ const initState = {
     kitchenCat:[],
     menu:[],
     continental:[],
-    local:[],
+    menuCategory:[],
     bar:[],
     purchases: [],
     allocations:[],
@@ -19,11 +19,11 @@ const inventoryReducer =(state=initState, action) => {
                 ...state,
                 products: allData
         }
-        case 'FETCH_LOCAL':
-         var localData = action.res.data.data;
+        case 'KITCHEN_MENU_CATEGORY':
+         var ctData = action.res.data.data;
         return {
                 ...state,
-                local: localData
+                menuCategory: ctData
         }
 
         case 'FETCH_CONTINENTAL':
