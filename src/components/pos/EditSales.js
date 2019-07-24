@@ -1,20 +1,21 @@
-/**
- * Created by wawooh on 4/30/19.
- */
-import React, {PureComponent,Suspense} from 'react';
+ 
+import React, {PureComponent,Suspense } from 'react';
 import {Styles} from '../../Config'
 import {connect} from 'react-redux';
 import {Helmet} from "react-helmet";
-import { Switch, Modal, Button, InputNumber, Select, Form, Card,Pagination, Spin, Divider, Icon } from 'antd'; 
-import {getSystemSettings} from '../../store/actions/settingsActions'
+import { Switch, Modal, Button, InputNumber, Tabs, Select, Form, Card,Pagination, Spin, Divider, Icon } from 'antd';
 import * as actions from '../../store/actions/posActions'
 import * as hactions from '../../store/actions/hallActions'
+import * as iactions  from '../../store/actions/inventoryActions'
+import {getSystemSettings} from '../../store/actions/settingsActions'
+import PlateItem from '../utility/PlateItem'
 import PageLoading from '../loading/PageLoading'
 import CartList from './CartList'
 import CartTotal from './CartTotal'
-import shortId from 'shortid'
-// import Styles from 'st'
+import shortId from 'shortid' 
 
+
+const TabPane = Tabs.TabPane;
 
 const Option = Select.Option;
 const gridStyle = {
@@ -23,16 +24,24 @@ const gridStyle = {
       backgroundColor:'#85a5ff'
   }; 
 const numEachPage = 10
-let itemCount = 0;
+let itemCount = 0; 
+let plateOrder= [];
+
+function callback(key) {
+    console.log(key);
+  }
+  let menuFrame = []
 
 class EditSales extends PureComponent {
     state = {
         id:'',
         type: '',
-        waiter: '',
+        segment:'edit',
         minValue:0,
         maxValue: 10,
+        waiter: '',
         menu: [],
+        menuFrame:[],
         seat: '',
         ord_type:'',
         invoice: '',
@@ -44,37 +53,44 @@ class EditSales extends PureComponent {
         tname: '',
         kitchen: '',
         modal: {
-          show: false,
-          title: '',
-          qty:1,
-          id: ''
+            add:false,
+            edit: false,
+            title: '',
+            qty:1,
+            id: ''
         },
         base:false,
         fetching: false,
     }
+    
+    showModal = (field) => {
+        this.setState({
+                ...this.state,
+          modal:{
+            ...this.state.modal,
+          [field]: true
+          }
+        });
+      }
 
-    fetchMenu = (value) => {
-
-        this.setState({data: [], fetching: true});
-        let data = this.props.fetchMenu(value)
-        this.setState({data, fetching: false});
-        console.log('datas', data)
-    }
-
+    fetchMenu = (id,value) => { 
+    let data = this.props.fetchMenu(id,value)
+    this.setState({data: [], fetching: true});
+    menuFrame['menu'+id] = this.props.menu
+    this.setState({data, fetching: false, menuFrame:menuFrame}); 
+}
+     
 
     handleChange = (value, base, item, price) => { 
-        let local =[...this.state.localOrder]
-        // console.log(e)
+        let local =[...this.state.localOrder] 
         if(base === 'Yes'){
-            // console.log("VALUE", this.state.localOrder.filter((item) => value === item))
-            var index  = local.indexOf(value);
+             var index  = local.indexOf(value);
             if(index === -1){
-                // console.log("Does not exist") 
                 let title = item+ " "+price
                 this.setState({
                     ...this.state, 
                     modal:{
-                        show:true,
+                        add:true,
                         id: value,
                         title:title
                     },
@@ -82,8 +98,7 @@ class EditSales extends PureComponent {
                 });
             
             }
-            else{
-                // console.log("INDEX", index)
+            else{ 
                 let arr = local.splice(index,1); 
                 let Qty =[...this.state.localQty]
                  Qty.splice(index,1);
@@ -94,8 +109,7 @@ class EditSales extends PureComponent {
                     localQty:Qty
                 });
                 console.log(" REMOVED", arr)
-                console.log("NEW AFTER REMOVED", local)
-                // this.state.localOrder.splice(index, 1)
+                console.log("NEW AFTER REMOVED", local) 
             }
             
         
@@ -140,7 +154,7 @@ class EditSales extends PureComponent {
             base:true,
             modal:{
                 ...this.state.modal,
-                show:false,
+                add:false,
                 title:'',
                 id: '',
                 qty:1
@@ -171,7 +185,7 @@ class EditSales extends PureComponent {
                       } 
                 });
     }
-    handleOk = () => {
+    handleOk = (field) => {
         this.setState({
                 ...this.state,
           modal:{
@@ -179,13 +193,13 @@ class EditSales extends PureComponent {
             title:'',
             id:'',
             qty:1,
-          show: false
+          [field]: false
           } 
         });
       }
   
     handleOrderType = (e) => {
-        console.log(e)
+        // console.log(e)
         this.setState({
             type: e
         })
@@ -227,8 +241,19 @@ class EditSales extends PureComponent {
         this.props.emptyCart()
     }
     removeCartItem = (data) => {
-        this.props.deleteCartItem(data.id)
+        this.props.deleteCartItem(data.id, data.ord_type, data.plate, data.invoice)
+
     }
+
+    removePlateItem = (data) => {
+        this.props.deleteCartItem(data.id, data.ord_type, data.plate, data.invoice)
+        setTimeout(this.editPlate(newplate), 3000)
+
+    }
+    localPlusMinus = (plate, invoice_number) => {
+        this.props.localPlusMinus(plate, invoice_number)
+    }
+
     quantityChange = (data) => {
                 if (data.newQty !== ''){
                     this.props.quantityChange(data)
@@ -249,10 +274,15 @@ class EditSales extends PureComponent {
                   {
                  this.handleReceipt()
                }
-               // console.log(this.props.order)
-               // this.handleOrder()
+               this.props.fetchAllMenu()
          }
+         componentWillMount(){
 
+            this.props.fetchWaiters()
+            this.props.fetchTable()
+            this.props.getKitchenFromMenu()
+            this.props.fetchSavedInvoice()
+         }
          handleReceipt= ()=>{
              this.props.receiptNumber()
          }
@@ -279,10 +309,7 @@ class EditSales extends PureComponent {
             // console.log(data.table)
 
         }
-        componentWillMount(){
-            this.props.fetchSavedInvoice()
-
-        }
+        
         componentDidUpdate(){
             // console.log(this.props.order)
             const order = this.props.order
@@ -306,10 +333,11 @@ class EditSales extends PureComponent {
     render() {
     
 
-         const {waiters,  data, menu, summary,  htables, settings} = this.props
+         const {waiters,  data,  summary, OrderPlateItem,  htables, settings, menuCategory} = this.props
          const { fetching, localOrder , type} = this.state;
      const enabled = data && data.length > 0;
      const plated = itemCount && itemCount > 0 && localOrder.length > 0; 
+     plateOrder = OrderPlateItem 
 
 
         let settingsData = []
@@ -354,55 +382,65 @@ const en = type === true?'Dine-In': 'Take-Out';
 
 <div className="mother">
     <div className="child  large-4 med-4 small-4">
+    <Tabs onChange={callback} type="card" style={{backgroundColor:'#08979c', fontWeight: 'bolder'}} defaultKey="1">
+    {menuCategory && menuCategory.map(data=>(
+    <TabPane tab={<span><Icon type="coffee" /> {data.kitchen}</span>}   key={data.id}>
 
-  <Divider type="horizontal">Search Menu</Divider>
+<Divider type="horizontal">Search  {data.kitchen} Menu</Divider>
 <Form.Item label="Search menu by name" >
-<Select
+     <Select
          showSearch
         // value={value}
         placeholder="Select by menu name"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}
-        onSearch={this.fetchMenu}
-        // onClick={()=>this.handleChange(d.id, d.base)}
+        // onSearch={this.fetchMenu}
+        onSearch={(value)=>this.fetchMenu(data.id,value)}
         // onChange={this.handleChange}
          style={Styles.select}
       >
-        {menu && menu.map(d => <Option key={d.id}>{d.item}-{d.price}  {settings.currency}</Option>)}
+        {menuFrame['menu'+data.id] && menuFrame['menu'+data.id].map(d => <Option key={d.id}>{d.item}-{d.price}  {settings.currency}</Option>)}
       </Select>
-</Form.Item>
-
-    
+</Form.Item> 
  
 {plated?  <Button  type="primary" onClick={this.makePlate} style={Styles.button} htmlType="submit">Make Plate</Button>: 
-''}
- <Card title="Menu List">
-    
-     {menu &&
-      menu.length > 0 &&
-      menu.slice(this.state.minValue, this.state.maxValue).map(val => (
-          val.base === 'Yes'?  
-          <React.Fragment  key={shortId.generate()} > 
-<Card.Grid className={this.state.localOrder.indexOf(val.id) > -1 ? "box green": "box"} key={shortId.generate()} onClick={(e)=>this.handleChange(val.id, val.base, val.item, val.price)}>
-   {val.item} - {val.price} {settings.currency} 
-    </Card.Grid>
-     
-         </React.Fragment> :
-          <React.Fragment  key={shortId.generate()} >
-              <Card.Grid style={gridStyle}  key={shortId.generate()} onClick={()=>this.handleChange(val.id, val.base, val.item, val.price)}>
-   {val.item} - {val.price} {settings.currency}
-    </Card.Grid>
-          </React.Fragment>
-          
-    ) )}
+    ''}
+     <Card title="Menu List">
+        
+         {menuFrame['menu'+data.id] &&
+          menuFrame['menu'+data.id].length > 0 &&
+          menuFrame['menu'+data.id].slice(this.state.minValue, this.state.maxValue).map(val => (
+              val.base === 'Yes'?  
+              <React.Fragment  key={shortId.generate()} > 
+    <Card.Grid className={this.state.localOrder.indexOf(val.id) > -1 ? "box green": "box"} key={shortId.generate()} onClick={(e)=>this.handleChange(val.id, val.base, val.item, val.price)}>
+       {val.item} - {val.price} {settings.currency} 
+        </Card.Grid>
+         
+             </React.Fragment> :
+              <React.Fragment  key={shortId.generate()} >
+                  <Card.Grid style={gridStyle}  key={shortId.generate()} onClick={()=>this.handleChange(val.id, val.base, val.item, val.price)}>
+       {val.item} - {val.price} {settings.currency}
+        </Card.Grid>
+              </React.Fragment>
+              
+        ) )}
 
-</Card>
+  </Card>
+   
+  
      <Pagination
           defaultCurrent={1}
           defaultPageSize={numEachPage} //default size of page
+          pageSize={numEachPage}
           onChange={this.handlePageChange}
-          total={menu.length} //total number of card data available
+          total={menuFrame['menu'+data.id] && menuFrame['menu'+data.id].length} //total number of card data available
         />
+
+    </TabPane>
+        ))}
+  </Tabs>
+
+  
 
     </div>
 
@@ -490,9 +528,9 @@ const en = type === true?'Dine-In': 'Take-Out';
 <Suspense fallback={<PageLoading/>}>
     <Modal
         title={this.state.modal.title}
-        visible={this.state.modal.show}
-        onOk={this.handleOk}
-        onCancel={this.handleOk} 
+        visible={this.state.modal.add}
+        onOk={() => this.handleOk('add')} 
+        onCancel={() => this.handleOk('add')} 
         okText=""
         width="240px"
     >
@@ -521,6 +559,25 @@ const en = type === true?'Dine-In': 'Take-Out';
 </React.Fragment>
 
 
+<React.Fragment>
+<Suspense fallback={<PageLoading/>}>
+    <Modal
+        title="Plate Details"
+        visible={this.state.modal.edit} 
+        onOk={() => this.handleOk('edit')} 
+        onCancel={() => this.handleOk('edit')} 
+        okText=""
+        width="340px"
+    >
+
+    <PlateItem remove={this.removePlateItem} plateOrder={plateOrder}/>  
+
+    
+    </Modal>
+</Suspense>
+</React.Fragment>
+
+
         </React.Fragment>
         );
     }
@@ -531,7 +588,11 @@ function mapStateToProps(state) {
         settings: state.setting.settings,
         waiters:state.pos.waiters,
         menu: state.pos.menu,
+        allMenuList: state.inventory.menu,
+        menuCategory: state.inventory.menuCategory,
         data: state.pos.cart,
+        plateArray: state.pos.plateArray,
+        OrderPlateItem: state.pos.OrderPlateItem,
         summary: state.pos.cartTotal,
         receiptNumber: state.pos.receiptNumber,
         htables: state.hall.table,
@@ -545,17 +606,21 @@ const mapDispatchToProps = (dispatch) => {
     getSystemSettings:(data)=>dispatch(getSystemSettings()),
       fetchSavedInvoice: ()=> dispatch(actions.fetchSavedInvoice()),
     fetchWaiters: ()=> dispatch(actions.fetchWaiters()),
-      fetchMenu: (value)=> dispatch(actions.fetchMenu(value)),
+    fetchMenu: (id,value)=> dispatch(actions.fetchMenu(id,value)),
+    fetchAllMenu: ()=> dispatch(iactions.fetchMenu()),
+    getKitchenFromMenu: ()=> dispatch(iactions.getKitchenFromMenu()),
       getCartItem: ()=> dispatch(actions.getCartItem()),
       addToCart: (data)=> dispatch(actions.addToCart(data)),
-      getCartTotal:()=> dispatch(actions.getCartTotal()),
+      getCartTotal: () => dispatch(actions.getCartTotal()),
+     addBaseToCart: (order, quantity) => dispatch(actions.addBaseToCart(order, quantity)),
       receiptNumber:()=> dispatch(actions.receiptNumber()),
         fetchTable: ()=> dispatch(hactions.fetchTable()),
         getSeatByTable:(tid)=>dispatch(hactions.getSeatByTable(tid)),
       saveOrder:(data)=>dispatch(actions.saveOrder(data)),
       emptyCart:()=> dispatch(actions.emptyCart()),
-      deleteCartItem:(id)=>dispatch(actions.deleteCartItem(id)),
-      quantityChange:(data)=>dispatch(actions.quantityChange(data))
+    deleteCartItem:(id, ord_type, plate, invoice)=>dispatch(actions.deleteCartItem(id, ord_type, plate, invoice)),
+        quantityChange: (data) => dispatch(actions.quantityChange(data)),
+            localPlusMinus: (plate, invoice) => dispatch(actions.localPlusMinus(plate, invoice))
 
 
   }

@@ -11,3 +11,4 @@ npm install react-csv --save
 npm install react-simple-animate
 npm install --save redux-devtools-extension
 npm i moment
+npm install --save react-chartjs-2 chart.js

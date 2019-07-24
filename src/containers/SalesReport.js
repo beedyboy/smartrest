@@ -157,7 +157,7 @@ showTrail = (e) => {
  </div>
             <div className="grid">
                 <div className="column column-6">
-                  <SalesReportTable showModal={this.showModal} report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
+                  <SalesReportTable period={this.state.startDate + " to " + this.state.endDate} showModal={this.showModal} report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
                 </div>
 
             <div className="column column-6">
@@ -191,7 +191,7 @@ showTrail = (e) => {
                      onCancel={()=>this.handleOk('modal')}
                   >
                   <Suspense fallback={<PageLoading/>}>
-          <OrderDetails  order={orderDetails} currency={settings.currency} invoice={this.state.receipt}/>
+          <OrderDetails  order={orderDetails} currency={settingsData.currency} invoice={this.state.receipt}/>
           
           </Suspense>
           

@@ -1,6 +1,4 @@
-/**
- * Created by wawooh on 4/25/19.
- */
+ 
         import React, { PureComponent, Suspense } from 'react' 
         import {connect} from 'react-redux'
         import {Helmet} from "react-helmet";
@@ -13,15 +11,32 @@
 
  import { Statistic, Card, Row, Col, Icon,Skeleton, Spin } from 'antd';
  import {  AnimateKeyframes } from 'react-simple-animate';
- import {
-  VictoryBar,
-  VictoryChart,
-  VictoryTheme,
-  VictoryTooltip, 
-  VictoryLabel,
-  VictoryVoronoiContainer 
-} from "victory";
+// //  import {
+//   VictoryBar,
+//   VictoryChart,
+//   VictoryTheme,
+//   VictoryTooltip, 
+//   VictoryLabel,
+//   VictoryVoronoiContainer 
+// } from "victory";
+import {
+  Bar
+} from 'react-chartjs-2';
 
+
+const data = {
+  labels: [],
+  datasets: [{
+    label: 'My First dataset',
+    backgroundColor: 'rgba(255,99,132,0.2)',
+    borderColor: 'rgba(255,99,132,1)',
+    borderWidth: 1,
+    hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+    hoverBorderColor: 'rgba(255,99,132,1)',
+    data:[]
+    //data: [65, 59, 80, 81, 56, 55, 40]
+  }]
+};
 
 class Dashboard extends PureComponent {
 
@@ -29,24 +44,36 @@ state={
     loading:true,
     play: true
 }
+componentWillMount(){
+   this.props.getSystemStat()
+   this.props.topProduct()
+   this.setState({
+     loading: false
+   })
+
+}
 componentDidMount(){
     this.props.getSystemStat()
     this.props.topProduct()
     this.setState({
         loading:false
-    })
-
-
+    }) 
 }
         render() {
         const {stat, topFour, topProd} = this.props
       const { loading } = this.state;
-let tip = []
-topFour.forEach(element => {
-   tip.push(element.menu_name)
-});
+      let barData =  ''
 
-            //console.log(element.menu_name)
+      if(topFour){
+        barData = topFour
+      }else {
+        barData = data
+      }
+// let tip =topFour
+// topFour.forEach(element => {
+//    tip.push(element.menu_name)
+// });
+ 
     if(loading) {
         // if your component doesn't have to wait for an async action, remove this block
 
@@ -120,36 +147,19 @@ topFour.forEach(element => {
      <Row>
 
        <Col span={16}>
-       
-       <VictoryChart 
-        theme={VictoryTheme.material}
-         domainPadding={30}  
-          containerComponent={<VictoryVoronoiContainer />}
-           animate={{ duration: 2000, easing: "bounce" }} >
-     <VictoryLabel x={150} y={20}
-  text={["Top 4 Menu Items"]} verticalAnchor="middle" textAnchor="end"
-  style={[{ fill: '#000' }, { fill: '#6128ff' }]}
-  lineHeight={[1.22, 2, 3, 1]} 
-/>
- 
-  <VictoryBar
-    cornerRadius={{ topLeft: (d) => d.sold * 4 }}
-    style={{ data: { fill: "SpringGreen " } }}
-    data={topFour}
-    x="key"
-    y="sold" labelComponent={<VictoryTooltip cornerRadius={0} />}
-    animate={{
-      onExit: {
-        duration: 500,
-        before: () => ({
-          _y: 0,
-          fill: "orange",
-          label: "BYE"
-        })
+       {/* < Bar data = {
+        barData
       }
-    }}
-  />
-</VictoryChart>
+       width = { 100 }
+       height = { 50 }
+       options = {
+         {
+           maintainAspectRatio: true
+         }
+       }
+       />  */}
+       
+ 
 
  
 </Col>
@@ -191,15 +201,7 @@ topFour.forEach(element => {
  
   </Col>
      </Row>
-     {/* <VictoryPie  colorScale={["#008f68", "#6DB65B", "#4AAE9B", "#EFBB35"]}
-  data={[
-    { x: "lizard", y: 1234 },
-    { x: "snake", y: 2048 },
-    { x: "goat", y: 1348 },
-    { x: "crocodile", y: 2600 },
-    { x: "alligator", y: 9000 },
-  ]}
-/>  */}
+    
 </React.Fragment>
 
         )

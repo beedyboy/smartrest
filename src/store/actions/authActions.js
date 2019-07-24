@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import {serverUrl} from '../../Config'
-import {shopId, token, fullname} from '../utility'
+import {shopId, token, userId, fullname} from '../utility'
 
 export const authStart =()=>{
     return (dispatch)=> {
@@ -36,17 +36,15 @@ export const logout = ()=>{
     
     return (dispatch) => {
         axios.post(serverUrl+'login/logout/',{
-           
+           userId:userId(),
           token: token(),
           fullname: fullname(),
           shopId: shopId()
 
         })
-        .then(res=>{ 
-            // console.log(res)
-            if(res.data.status === "success"){
-           
-             
+        .then(res=>{  
+            if(res.data.status === "success"){ 
+                localStorage.removeItem('userId');
                 localStorage.removeItem('user');
                 localStorage.removeItem('fullname');
                 localStorage.removeItem('position');
@@ -90,6 +88,7 @@ export const authLogin =(username, password)=>{
                localStorage.setItem('token', token);
                localStorage.setItem('position', res.data.record.position);
                localStorage.setItem('fullname', res.data.record.fullname);
+               localStorage.setItem('userId', res.data.record.id);
                localStorage.setItem('user', username);
                localStorage.setItem('email', res.data.record.acc_email);
                localStorage.setItem('shop', res.data.record.shopId);

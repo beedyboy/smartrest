@@ -1,13 +1,11 @@
-/**
- * Created by wawooh on 4/25/19.
- */
+
 import React, {memo} from 'react'
 import {TableConfig} from '../../Config'
 import shortId from 'shortid'
 import { Table , Typography, Button, InputNumber, Icon} from 'antd';
 const {  Text } = Typography;
 
-const CartList = memo(({data, settings, remove, changeQty, editPlate}) =>{
+const CartList = memo(({data, settings, remove, localPlusMinus, changeQty, editPlate}) =>{
       const columns = [
           {
         title: 'Item',
@@ -42,8 +40,17 @@ const CartList = memo(({data, settings, remove, changeQty, editPlate}) =>{
         key:shortId.generate(),
          render: (record)=>  (
            record.base === "Yes"?
-            '-'
-
+          <React.Fragment>
+             <Button type = "primary"
+             onClick = {
+                 () => {
+                   localPlusMinus(record.plate, record.invoice)
+                 }
+               } >
+              <Icon type = "plus-circle" theme = "twoTone" /> 
+              Add
+               </Button>
+            </React.Fragment>
            :
               <InputNumber min={0} max={1000} value={record.qty} onChange={(value) =>
             {
@@ -69,23 +76,17 @@ const CartList = memo(({data, settings, remove, changeQty, editPlate}) =>{
            title: 'Action',
            key:shortId.generate(),
            render: (record)=>  (
-              // record.base === "Yes"?
-              // <Button type="primary" onClick={() =>
-              //   {
-              //     editPlate(record.plate) 
-                   
-              //   }
-    
-              //   } ><Icon type="edit" theme="twoTone" /></Button>
-              // :
-              // " "
-                  
-             
+            
                 (
                   <Button type="danger" onClick={() => {
-                    const data = { id: record.id };  
+                    const data = {
+                      id: record.id,
+                      ord_type: record.base,
+                      plate: record.plate
+                   , invoice: record.invoice
+                   };
                   remove(data)  
-                } } >
+                } } >  
                   <Icon type="delete" theme="twoTone" />
                   </Button>                          
                               

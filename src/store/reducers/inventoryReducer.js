@@ -1,24 +1,15 @@
 
-const initState = {
-    products:[],
+const initState = { 
     kitchen:[],
     kitchenCat:[],
-    menu:[],
-    continental:[],
-    menuCategory:[],
-    bar:[],
+    menu:[], 
+    menuCategory:[], 
     purchases: [],
-    allocations:[],
-    kitchenProducts: []
+    allocations:[], 
 }
 const inventoryReducer =(state=initState, action) => {
     switch (action.type){
-        case 'FETCH_ALL_PRODUCT':
-            var allData = action.res.data.data;
-        return {
-                ...state,
-                products: allData
-        }
+         
         case 'KITCHEN_MENU_CATEGORY':
          var ctData = action.res.data.data;
         return {
@@ -26,19 +17,7 @@ const inventoryReducer =(state=initState, action) => {
                 menuCategory: ctData
         }
 
-        case 'FETCH_CONTINENTAL':
-         var continentalData = action.res.data.data;
-        return {
-                ...state,
-                continental: continentalData
-        }
-
-        case 'FETCH_BAR':
-         var barData = action.res.data.data;
-        return {
-                ...state,
-                bar: barData
-        }
+        
         case 'FETCH_KITCHEN':
          var kitchenData = action.res.data.data;
         return {
@@ -73,13 +52,7 @@ const inventoryReducer =(state=initState, action) => {
                 allocations: allocationData
         }
 
-        case 'FETCH_PRODUCT_BY_KITCHEN':
-              var kitchenProductsData = action.res.data.data;
-        return {
-                ...state,
-                kitchenProducts: kitchenProductsData
-        }
-
+        
         default:
         return state;
 
@@ -88,6 +61,4 @@ const inventoryReducer =(state=initState, action) => {
 }
 
 export default inventoryReducer
-/**
- * Created by wawooh on 4/15/19.
- */
+ 

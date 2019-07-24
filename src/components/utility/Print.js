@@ -45,13 +45,18 @@ class Print extends PureComponent {
         <React.Fragment>
 
 <ReactToPrint
-          trigger={() => <Button type="ghost"><Icon  type="printer" />Print this out!</Button>}
+          trigger={() => <Button type="ghost" style={{marginLeft: '35%', backgroundColor:'#08979c', fontWeight: 'bolder'}}><Icon  type="printer" />Print this out!</Button>}
           content={() => this.r}
         />
             <br />
         <React.Fragment>
 <Invoice ref={el => (this.r = el)}  data={orderDetails} sold={invoiceDetails} shop={shopData}/>
 
+        <br />
+<ReactToPrint
+          trigger={() => <Button type="ghost" style={{float: 'right', marginRight: '35%', backgroundColor:'#08979c', fontWeight: 'bolder'}}><Icon  type="printer" />Print this out!</Button>}
+          content={() => this.r}
+        />
             </React.Fragment>
 
 

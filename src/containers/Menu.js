@@ -226,7 +226,7 @@ const mapStateToProps = (state)=> {
     return {
 
         result: state.form.result,
-        products: state.inventory.products,
+        // products: state.inventory.products,
         menu: state.inventory.menu,
         kitchenCat: state.inventory.kitchenCat,
         role: state.auth.role
@@ -235,7 +235,7 @@ const mapStateToProps = (state)=> {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchCategory: ()=> dispatch(actions.fetchCategory()),
-    fetchAllProduct: ()=> dispatch(actions.fetchAllProduct()),
+    // fetchAllProduct: ()=> dispatch(actions.fetchAllProduct()),
     fetchMenu: ()=> dispatch(actions.fetchMenu()),
     createMenu: (data) => dispatch(actions.createMenu(data)),
     updateMenu: (data) => dispatch(actions.updateMenu(data)),

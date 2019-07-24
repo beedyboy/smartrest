@@ -10,8 +10,8 @@ import {TableConfig2, Styles} from '../../Config'
 import ReactToPrint from "react-to-print";
 const {  Text } = Typography;
  
-const SalesReportTable = React.memo(({report, total, trail, settings, showModal}) =>{
- 
+const SalesReportTable = React.memo(({report, total, trail, settings, period, showModal}) =>{
+
 const columns = [
     {
         title: 'Invoice Number', 
@@ -99,7 +99,7 @@ const headers = [
 
 <CSVLink
   data={report}
-  filename={"my-file.csv"}
+  filename={"salesReport"+period+".csv"}
   target="_blank"
    style={Styles.actionButton}
    headers={headers}

@@ -18,7 +18,7 @@ render(){
       soldData['cashier'] = sold[index].cashier
       soldData['waiter'] = sold[index].waiter
       soldData['table'] = sold[index].table
-      // soldData['seat'] = sold[index].seat
+      soldData['order_number'] = sold[index].order_number
       // soldData['kitchen'] = sold[index].kitchen
       soldData['nfund'] = sold[index].nfund
       soldData['gtotal'] = sold[index].gtotal
@@ -49,7 +49,7 @@ render(){
                 </p>
 
                  <p>Invoice: {soldData.invoice_number} </p>
-                 <p>Order Number: #{soldData.id} </p>
+                 <p> Order Number: #{soldData.order_number } </p>
                     {soldData.ord_type === "Take Out"?
                         <p>  Order:  {soldData.ord_type}  </p>
 

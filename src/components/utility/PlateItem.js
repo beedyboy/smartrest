@@ -5,7 +5,7 @@ import React from 'react'
 import shortId from 'shortid'
 import {Button, Icon} from 'antd'
 const PlateItem = React.memo(({id, plateOrder,remove}) => {
-    console.log("ORDER", plateOrder)
+   //  console.log("ORDER", plateOrder)
  return (
 
     <table>
@@ -28,7 +28,12 @@ const PlateItem = React.memo(({id, plateOrder,remove}) => {
             <td>{order.total}</td>
             <td>
             <Button type="danger" onClick={() => {
-                    const data = { id: order.id };  
+                    const data = {
+                       id: order.id,
+                       ord_type: order.base,
+                       plate: order.plate,
+                       invoice: order.invoice
+                    };
                     remove(data)  
                 } } >
                   <Icon type="delete" theme="twoTone" />

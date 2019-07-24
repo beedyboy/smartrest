@@ -11,7 +11,7 @@ import Hall from './containers/Hall'
 import Supplier from './containers/Supplier'
 import SignIn from './components/auth/SignIn'
 import Purchases from './containers/Purchases'
-import Acquisition from './containers/Acquisition'
+// import Acquisition from './containers/Acquisition'
 import POS from './containers/Pos'
 import Menu from './containers/Menu'
 import Kitchen from './containers/Kitchen'
@@ -56,7 +56,7 @@ class App extends PureComponent {
                     <PrivateRoute exact path='/menu' component={Menu}/>
                     {/* <PrivateRoute exact path='/product' component={ProductMenu}/> */}
                     <PrivateRoute exact path='/purchases' component={Purchases}/>
-                    <PrivateRoute exact path='/acquisition' component={Acquisition}/>
+                    {/* <PrivateRoute exact path='/acquisition' component={Acquisition}/> */}
                     <PrivateRoute exact path='/pos' component={POS}/>
                     <PrivateRoute exact path='/kitchen' component={Kitchen}/>
                     <PrivateRoute  path='/order/:invoice' component={EditSales}/>

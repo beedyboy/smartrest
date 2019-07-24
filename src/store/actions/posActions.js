@@ -1,7 +1,8 @@
-
+import React from 'react'
 import axios from 'axios';
 import {serverUrl} from '../../Config'
 import {shopId, token, invoice, position} from '../utility'
+import { Redirect } from 'react-router-dom';         
 
 export const addToCart = (menuId) => {
     return (dispatch, getState) => {
@@ -151,7 +152,6 @@ export const editPlateItem = (plate) => {
           }
        })
          .then(res => {
-             console.log(res)
         dispatch({type: 'PLATE_ITEM_DATA', res});
         })
 
@@ -192,6 +192,11 @@ export const saveOrder = (data) => {
                      dispatch({type: 'SAVE_SUCCESS', res});
                 dispatch(receiptNumber());
                 dispatch(fetchBasket());
+                if(data.segment === "edit"){ 
+                    // eslint-disable-next-line no-unused-expressions
+                    <Redirect to = '/pos' />
+
+                }
 
            }
            else {
@@ -287,11 +292,14 @@ export const emptyCart = () => {
     }
 }
 
-export const deleteCartItem = (id) => {
+export const deleteCartItem = (id, ord_type, plate,invoice) => {
     return (dispatch) => {
        axios.get( serverUrl + 'pos/deleteCartItem',{
         params : {
              id:id,
+             ord_type:ord_type,
+             plate:plate,
+             invoice: invoice,
             shopId: shopId()
           }
        })
@@ -333,13 +341,38 @@ export const quantityChange = (data) => {
                 dispatch({type: 'CREATE_PRODUCT_ERROR', res});
 
            }
-
-        // dispatch({type: 'FETCH_BASKET', res});
+ 
         })
 
     }
 }
 
+export const localPlusMinus = (plate, invoice) => {
+    return (dispatch) => { 
+       axios.get( serverUrl + 'pos/localPlusMinus',{
+        params : {
+            plate: plate,
+              invoice: invoice, 
+            shopId: shopId()
+          }
+       })
+         .then(res => {
+           console.log("localPlusMinus", res)
+              if(res.data.status === "success"){
+                  dispatch({type: 'SAVE_SUCCESS', res});
+               dispatch(getCartItem());
+                dispatch(getCartTotal());
+           }
+           else{
+
+                dispatch({type: 'CREATE_PRODUCT_ERROR', res});
+
+           }
+ 
+        })
+
+    }
+}
 export const fetchReceivable = () => {
     return (dispatch) => {
        axios.get( serverUrl + 'pos/fetchReceivable',{

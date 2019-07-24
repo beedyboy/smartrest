@@ -56,7 +56,7 @@ export const Styles ={
           backgroundColor: '#85a5ff',
         border: '2px solid',
         borderStyle: 'groove',
-        borderRadius:'2px',
+        borderRadius:'5px',
           color: 'white',
           padding: '6px',
           textAlign: 'center',

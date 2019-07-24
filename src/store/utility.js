@@ -7,7 +7,12 @@ export const updateObject =(oldObject, updatedProperties)=>{
 }
 
 // export const shopId = localStorage.getItem('shop')
-export function shopId(){return localStorage.getItem('shop')}
+export function shopId() {
+    return localStorage.getItem('shop')
+}
+export function userId() {
+    return localStorage.getItem('userId')
+}
 
 export function token(){return localStorage.getItem('token')}
 
