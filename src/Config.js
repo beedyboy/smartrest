@@ -1,10 +1,26 @@
 import React from 'react'
+// export const serverUrl = 'http://192.168.0.5/smart/'
 
 export const serverUrl = 'http://localhost/project/php/smart/'
 
+export const customPanelStyle = {
+  background: '#f7f7f7',
+  borderRadius: 4,
+  marginBottom: 24,
+  border: 0,
+  overflow: 'hidden',
+}
+export  const invoiceTableConfig = {
+    pagination : {
+        pageSizeOptions : ['10', '20','30'],
+        showSizeChanger : true,
+        pageSize: 10,
+        position: 'both'
+    }
+}
 export  const TableConfig = {
     pagination : {
-        pageSizeOptions : ['30', '40'],
+        pageSizeOptions : ['10', '20','30', '40'],
         showSizeChanger : true,
         pageSize: 5,
         position: 'top'
@@ -25,11 +41,18 @@ export const  Config = () => {
     </div>
   )
 }
+ 
 
 export const Styles ={
     'button': {
         margin:'10px',
   textAlign: 'center'
+    },
+    'print': {
+        margin: '10px',
+        textAlign: 'center',
+        backgroundColor: '#08979c',
+        fontWeight: 'bolder'
     },
     'select': {
         margin:'10px',

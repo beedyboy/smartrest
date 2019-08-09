@@ -15,6 +15,7 @@ const initState = {
     orderDetails: [],
     invoiceDetails: [],
     savedOrder:[],
+        savedOptOrder:[],
     Order:[],
     plateArray:[],
     plateDetail:[],
@@ -85,6 +86,12 @@ const posReducer =(state=initState, action) => {
               var newD = action.res.data.data;
       return updateObject(state,{
                 savedOrder: newD
+        })
+
+            case 'FETCH_OPT_ORDER':
+              var newDo = action.res.data;
+      return updateObject(state,{
+                savedOptOrder: newDo
         })
 
         case 'FETCH_RECEIVABLE':

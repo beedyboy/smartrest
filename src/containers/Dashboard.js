@@ -19,9 +19,7 @@
 //   VictoryLabel,
 //   VictoryVoronoiContainer 
 // } from "victory";
-import {
-  Bar
-} from 'react-chartjs-2';
+// import {  Bar } from 'react-chartjs-2';
 
 
 const data = {
@@ -168,13 +166,13 @@ componentDidMount(){
 <strong>Top 10 Menu</strong>
  
         </div>
-  {topProd.length > 0 ? 
+  {topProd && topProd.length > 0 ? 
   <ul className="list">
  
 {topProd && topProd.map((prod, key) => {
         return (
           <AnimateKeyframes
-          play
+          play      
           duration={3}
           keyframes={["opacity: 0", "opacity: 1"]}
           iterationCount="infinite"

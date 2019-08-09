@@ -13,7 +13,8 @@ export const salesReport = (data) => {
           }
        })
          .then(res => {
-            //  console.log(res)
+            
+           localStorage.setItem('active', 'Yes');
         dispatch({type: 'FETCH_SALES_REPORT', res});
         })
 
@@ -70,3 +71,71 @@ export const staffReport = (data) => {
 }
 
 
+
+
+export const stockSalesReport = (data) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'report/stockReport', {
+      params: {
+        ...data,
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+
+        localStorage.setItem('active', 'Yes');
+        dispatch({ type: 'FETCH_STOCK_SALES_REPORT', res });
+      })
+
+  }
+}
+
+export const stockRequestRefillReport = (data) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'report/StockRefillReport', {
+      params: {
+        ...data,
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+
+        localStorage.setItem('active', 'Yes');
+        dispatch({ type: 'FETCH_STOCK_REFILL_REPORT', res });
+      })
+
+  }
+}
+export const getPurchaseReport = (data) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'report/purchaseReport', {
+      params: {
+        ...data,
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+
+        localStorage.setItem('active', 'Yes');
+        dispatch({ type: 'FETCH_PURCHASE_REPORT', res });
+      })
+
+  }
+}
+
+export const getStoreReport = (data) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'report/storeReport', {
+      params: {
+        ...data,
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+
+        localStorage.setItem('active', 'Yes');
+        dispatch({ type: 'FETCH_STORE_REPORT', res });
+      })
+
+  }
+}

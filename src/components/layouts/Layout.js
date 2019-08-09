@@ -27,8 +27,8 @@ const page = this.props.location.pathname
         const menu = (
         <Menu  selectedKeys={[]} >
           <Menu.Item key="userCenter">
-            <Icon type="user" />
-           Profile
+            <Link to="/profile">  <Icon type="user" />
+           Profile </Link>
           </Menu.Item>
           <Menu.Item key="userinfo">
             <Icon type="setting" />
@@ -116,7 +116,7 @@ const mapStateToProps = (state)=> {
         }
 const mapDispatchToProps = dispatch => {
     return {
-        logout: ()=>dispatch(actions.logout())
+      logout: () => dispatch(actions.hotLogout())
     }
 }
 

@@ -7,6 +7,7 @@ import Zone from '../components/hall/Zone'
 import Table from '../components/hall/Table'
 import Seat from '../components/hall/Seat'
 import * as hactions from '../store/actions/hallActions'
+import { SketchPicker } from 'react-color';
 import '../layout.css'
 import {position,fullname} from '../store/utility'
 import NoAccess from '../components/utility/NoAccess'
@@ -23,6 +24,7 @@ class Hall extends PureComponent {
             name: '',
             tname: '',
             seat:'',
+            color:'#ffffff',
             tables: [],
             modal: {
               zone: false,
@@ -46,6 +48,7 @@ class Hall extends PureComponent {
                 tname: '',
                 seat:'',
                 tables: [],
+                color: '#ffffff',
 
             })
         }
@@ -96,6 +99,7 @@ class Hall extends PureComponent {
              this.setState({
                  id:    data.id,
                  name:   data.name,
+                 color:   data.color,
                 action: {
                      ...this.state.action,
                  zone:data.create
@@ -173,7 +177,7 @@ class Hall extends PureComponent {
          handleSeatSubmit=(e)=>{
             e.preventDefault();
         this.props.createSeat(this.state.tname, this.state.seat)
-            console.log(this.props.result.sending)
+            // console.log(this.props.result.sending)
            if(this.props.result.sending === false) {
 
                 this.reset()
@@ -206,13 +210,18 @@ class Hall extends PureComponent {
             }
 
         }
-
+        handleChangeComplete = (color) => {
+//    console.log("COLOR", color.hex)
+    this.setState({ color: color.hex });
+  };
+ 
 
         render() {
             if (position() === "SuperAdmin" || position() === "Admin" || position() === "Supervisor") {
 
-                const {zones, tables, htables, result} = this.props
-                const {name, tname, seat} = this.state;
+        //   const initial = '#5e72e4';    
+              const {zones, tables, htables, result} = this.props
+                const {name, tname, seat, color} = this.state;
                 const enabled = name.length > 0;
                 const tenabled = name &&
                     tname.length > 0;
@@ -272,44 +281,51 @@ class Hall extends PureComponent {
                         </div>
 
 
-                        <React.Fragment>
-                            <Suspense fallback={<PageLoading/>}>
-                                <Modal
-                                    title="Zone"
-                                    visible={this.state.modal.zone}
-                                    onOk={() => this.handleOk('zone')}
-                                    onCancel={() => this.handleOk('zone')}
-                                >
-                                    <Form layout="horizontal"
-                                          onSubmit={this.state.action.zone ? this.handleZoneSubmit : this.handleZoneUpdate}>
+<React.Fragment>
+    <Suspense fallback={<PageLoading/>}>
+        <Modal
+            title="Zone"
+            visible={this.state.modal.zone}
+            onOk={() => this.handleOk('zone')}
+            onCancel={() => this.handleOk('zone')}
+        >
+            <Form layout="horizontal"
+                    onSubmit={this.state.action.zone ? this.handleZoneSubmit : this.handleZoneUpdate}>
 
-                                        <Form.Item label="Zone Name">
-                                            <Input id="name"
-                                                   placeholder="Enter Zone Name"
-                                                   value={this.state.name}
-                                                   onChange={this.handleChange}/>
-                                        </Form.Item>
+                <Form.Item label="Zone Name">
+                    <Input id="name"
+                            placeholder="Enter Zone Name"
+                            value={this.state.name}
+                            onChange={this.handleChange}/>
+                                                                </Form.Item>
 
-                                        <Form.Item>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                disabled={!enabled}
-                                            >
-                                                {this.state.action.zone ? "Add Zone" : "Save Update"}
-                                            </Button>
-                                        </Form.Item>
-                                    </Form>
+<Form.Item label="Zone Color">
+            <SketchPicker
+        color={ color }
+        onChangeComplete={ this.handleChangeComplete }
+      />
+                  </Form.Item>
 
-                                    {  result.sending ? <Alert
-                                        message="Error"
-                                        description={result.message}
-                                        type="error"
-                                        showIcon
-                                    /> : ''}
-                                </Modal>
-                            </Suspense>
-                        </React.Fragment>
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        disabled={!enabled}
+                    >
+                        {this.state.action.zone ? "Add Zone" : "Save Update"}
+                    </Button>
+                </Form.Item>
+            </Form>
+
+            {  result.sending ? <Alert
+                message="Error"
+                description={result.message}
+                type="error"
+                showIcon
+            /> : ''}
+        </Modal>
+    </Suspense>
+</React.Fragment>
 
 
                         <React.Fragment>
@@ -485,8 +501,8 @@ class Hall extends PureComponent {
         const mapDispatchToProps = (dispatch) => {
         return {
         fetchHall: ()=> dispatch(hactions.fetchHall()),
-        createHall:(name)=>dispatch(hactions.createHall(name)),
-        updateZone:(name)=>dispatch(hactions.updateZone(name)),
+        createHall:(data)=>dispatch(hactions.createHall(data)),
+        updateZone:(data)=>dispatch(hactions.updateZone(data)),
         createTable:(hid,name)=>dispatch(hactions.createTable(hid,name)),
         updateTable:(hid,name,id)=>dispatch(hactions.updateTable(hid,name,id)),
         fetchTable:()=>dispatch(hactions.fetchTable()),

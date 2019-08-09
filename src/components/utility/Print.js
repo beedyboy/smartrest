@@ -1,6 +1,4 @@
-/**
- * Created by wawooh on 4/30/19.
- */
+
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {  Button, Icon} from 'antd';

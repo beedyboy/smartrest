@@ -1,29 +1,22 @@
-/**
- * Created by wawooh on 6/3/19.
- */
 import React from 'react'
-import { Icon, Typography } from 'antd';
-const {  Text } = Typography;
+import { Result, Button } from 'antd';
+import { Link } from 'react-router-dom'
 
-const NoAccess = React.memo(({name, position}) => {
+const NoAccess = React.memo(({ name, position }) => {
 
 
-        return (
-            <React.Fragment>
-                <Icon type="warning" />
-                <Text strong type="primary">
-                    Hi {name}
-                </Text>
-                <p>
-                    You do not have access to this page
-                </p>
-            </React.Fragment>
-            // <Button htmlType="submit" disabled={disabled} type={buttonType}>
-            //
-            //     {name}
-            //     {icon && icon?   <Icon type={icon}/> : ''}
-            // </Button>
-        )
+    return (
+        <React.Fragment>
+            <Result
+                status="403"
+                title="403"
+                subTitle={`Hi ${name} Sorry, you are not authorized to access this page.`}
+                extra={<Link to="/"><Button type="primary">Back Home</Button></Link>}
+            />
+
+        </React.Fragment>
+
+    )
 
 
 

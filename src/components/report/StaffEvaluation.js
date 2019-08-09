@@ -1,15 +1,17 @@
-/**
- * Created by wawooh on 5/5/19.
- */
+
 
 import React from 'react'
-import { Typography,Table, Row, Col } from 'antd';
+import { Typography, Table, Row, Col, Tag, Icon, Button } from 'antd';
 import {TableConfig2} from '../../Config'
 const {  Text } = Typography;
 
 
-const StaffEvaluation = React.memo(({report, settings}) =>{
+const StaffEvaluation = React.memo(({report, settings, showModal}) =>{
 
+  var r = report && report.map(a=> a.amount)
+  let s = r && r.length > 0 && r.reduce((acc,  val)=> {
+    return acc + val;
+  }); 
 const columns = [
     {
         title: 'Date',
@@ -18,8 +20,16 @@ const columns = [
       },
       {
         title: 'Invoice',
-        dataIndex: 'invoice_number',
-        key: 'sold',
+       
+        key: 'invoice_number',
+        render: (record) => (
+          <React.Fragment>
+
+            <Button type="primary" onClick={() => showModal(record.id, record.invoice_number)}>
+              <Icon type="eye" />{record.invoice_number}</Button>
+          </React.Fragment>
+        ),
+        
       },
       {
         title: 'Amount (' +settings.currency+')',
@@ -29,7 +39,8 @@ const columns = [
       {
         title: 'Status',
         dataIndex: 'status',
-        key: 'status',
+        key:'status'
+
       }
 
      ];
@@ -47,7 +58,10 @@ const columns = [
 
       <Col span={24}>
    <Table rowKey="key" dataSource={report} columns={columns}  {...TableConfig2}   bordered
-    title={() =>  <Text strong type="primary">Department Analysis</Text>}
+    title={() =>  <Text strong type="primary">Staff Report </Text>}
+    footer={() =>  <Text strong type="primary" style={{fontWeight:'bolder',  marginBottom: '10px',
+    marginLeft: '55%'}}> Total Amount <Tag color="geekblue" >{ s?  s : ' 0'} {settings.currency}
+      </Tag></Text>}
  />
       </Col>
 

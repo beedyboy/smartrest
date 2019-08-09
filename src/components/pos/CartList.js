@@ -3,12 +3,15 @@ import React, {memo} from 'react'
 import {TableConfig} from '../../Config'
 import shortId from 'shortid'
 import { Table , Typography, Button, InputNumber, Icon} from 'antd';
+import {position} from '../../store/utility'  
 const {  Text } = Typography;
 
-const CartList = memo(({data, settings, remove, localPlusMinus, changeQty, editPlate}) =>{
+const CartList = memo(({data, settings, remove, localPlusMinus, changeQty, useDiscount, editPlate}) =>{
+  // const discount = position === "SuperAdmin";
+  // console.log("DISCOUNT",discount);
       const columns = [
           {
-        title: 'Item',
+        title: 'Item', 
         key:shortId.generate(),
         render:(record)=> (
           record.base === "Yes"?
@@ -72,6 +75,32 @@ const CartList = memo(({data, settings, remove, localPlusMinus, changeQty, editP
         dataIndex: 'total',
         key: 'total',
       },
+
+        {
+          title: 'Dis', 
+          key: 'total',
+          render:(record)=>(
+            position() === "SuperAdmin"? 
+             <React.Fragment>
+ <InputNumber min={0} max={1000} value={record.discount} onChange={(value) => {
+
+                const data = {
+                  id: record.id,
+                  qty: record.qty,
+                  price: record.price,
+                  menu_id: record.menu_id,
+                  discount: value
+                };
+                useDiscount(data)
+              }
+
+              } />
+
+               </React.Fragment>
+            
+            : `{position()}`
+          )
+        },
        {
            title: 'Action',
            key:shortId.generate(),
@@ -103,7 +132,7 @@ const CartList = memo(({data, settings, remove, localPlusMinus, changeQty, editP
 
        <div>
 
-      <Table rowKey="id" dataSource={data} columns={columns}  {...TableConfig}   bordered
+      <Table style={{ whiteSpace: 'pre'}} rowKey="id" dataSource={data} columns={columns}  {...TableConfig}   bordered
     title={() =>  <Text strong type="primary">Cart </Text>}
  />
        </div>

@@ -3,14 +3,16 @@ import axios from 'axios';
 import {serverUrl} from '../../Config'
 import {shopId, token} from '../utility'
 
-export const createHall = (zone) => {
+export const createHall = (data) => {
     return (dispatch, getState) => {  
         //make async call to database
          axios.post(serverUrl + 'hall/save/',{
-           ...zone,
+           ...data,
            shopId: shopId()
         })
          .then(res => {
+
+           localStorage.setItem('active', 'Yes');
              if(res.data.status === "success"){
                   dispatch({type: 'SAVE_SUCCESS', res});
                   dispatch({type: 'CREATE_FORM', res});
@@ -29,11 +31,11 @@ export const createHall = (zone) => {
     }
 }
 
-export const updateZone = (zone) => {
+export const updateZone = (data) => {
     return (dispatch) => {
         //make async call to database
          axios.post(serverUrl + 'hall/update/',{
-           ...zone,
+           ...data,
              token:token()
         })
          .then(res => {

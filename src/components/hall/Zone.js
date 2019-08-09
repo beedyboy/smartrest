@@ -1,18 +1,34 @@
 import React from 'react' 
 import { Table, Typography,Icon, Button } from 'antd';
-import {TableConfig2} from '../../Config'
-const {  Text } = Typography;
+import { TableConfig2 } from '../../Config' 
+const {  Text } = Typography; 
 
 const Zone = React.memo(({zones, role, click}) =>{
     const columns = [{
         title: 'Zone Name',
         dataIndex: 'name',
-        key: 'name',
+        render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children:   < span>  { record.name}</span>,
+          };
+        },
+        // key: 'name',
       },
       {
         title: 'Created On',
         dataIndex: 'created_at',
-        key: 'created_at',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.created_at}</span>,
+          };
+        },
+        // key: 'created_at',
       }
     , {
       title: 'Action',
@@ -25,8 +41,9 @@ const Zone = React.memo(({zones, role, click}) =>{
             <Button type="primary" onClick={() =>
             {
                  const data = {
-                     id: record.id,
-                  name: record.name,
+                   id: record.id,
+                   name: record.name,
+                   color: record.color,
                   create:false,
             };
                 click(data)
@@ -44,9 +61,9 @@ const Zone = React.memo(({zones, role, click}) =>{
       
      
        <div>
-          
-
-      <Table rowKey="id" dataSource={zones} columns={columns}   {...TableConfig2}   bordered
+ 
+      <Table rowKey="id" dataSource={zones} columns={columns}  
+        {...TableConfig2}   bordered
     title={() =>  <Text strong type="primary">Zones </Text>}
  />
        </div>
@@ -57,3 +74,19 @@ const Zone = React.memo(({zones, role, click}) =>{
       
   
 export default Zone;
+
+
+
+ 
+    // {zones && zones.map((table, key) => {
+    //   return (
+    //     <tr style={{ backgroundColor: `${table.color}` }} key={shortId.generate()}>
+    //       <td>{table.name}</td>
+    //       <td>{table.created_at}</td>
+    //       <td><Button></Button></td>
+    //     </tr>
+    //   )
+
+
+    // })}
+ 

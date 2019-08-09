@@ -12,3 +12,6 @@ npm install react-simple-animate
 npm install --save redux-devtools-extension
 npm i moment
 npm install --save react-chartjs-2 chart.js
+npm i react-point
+npm install react-input-color --save
+npm install --save react-calculator

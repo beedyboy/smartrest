@@ -1,8 +1,7 @@
-import React from 'react'
+ 
 import axios from 'axios';
 import {serverUrl} from '../../Config'
-import {shopId, token, invoice, position} from '../utility'
-import { Redirect } from 'react-router-dom';         
+import {shopId, token, invoice, position} from '../utility' 
 
 export const addToCart = (menuId) => {
     return (dispatch, getState) => {
@@ -14,6 +13,7 @@ export const addToCart = (menuId) => {
           shopId: shopId()
         })
          .then(res => {
+           localStorage.setItem('active', 'Yes');
            if(res.data.status === "error"){
                  dispatch({type: 'SAVE_ERROR', res});
            }
@@ -41,7 +41,8 @@ export const addBaseToCart = (localOrder,localQty) => {
           shopId: shopId()
         })
          .then(res => {
-          //  console.log(res)
+          
+           localStorage.setItem('active', 'Yes');
            if(res.data.status === "error"){
                  dispatch({type: 'SAVE_ERROR', res});
            }
@@ -59,6 +60,33 @@ export const addBaseToCart = (localOrder,localQty) => {
     }
 }
 
+export const processDiscount = (data) => {
+  return (dispatch, getState) => {
+    //make async call to database
+    const invoice = localStorage.getItem('receiptNumber')
+    axios.post(serverUrl + 'posextra/processDiscount/', {
+            ...data,
+      invoice: invoice,
+      shopId: shopId()
+    })
+      .then(res => {
+        localStorage.setItem('active', 'Yes');
+        if (res.data.status === "error") {
+          dispatch({ type: 'SAVE_ERROR', res });
+        }
+        else if (res.data.status === "success") {
+          dispatch({ type: 'SAVE_SUCCESS', res });
+          dispatch(getCartItem());
+          dispatch(getCartTotal());
+        }
+      }).catch((err) => {
+        console.log(err)
+        dispatch({ type: 'SAVE_ERROR', err });
+      })
+
+
+  }
+}
 export const fetchWaiters = () => {
     return (dispatch) => {
        axios.get( serverUrl + 'pos/fetchWaiters',{
@@ -144,7 +172,7 @@ export const getPlate = (plate,invoice) => {
 export const editPlateItem = (plate) => {
     return (dispatch) => {
         
-       axios.get( serverUrl + 'pos/editPlateItem',{
+       axios.get( serverUrl + 'posextra/editPlateItem',{
         params : {
             shopId: shopId(),
             invoice:invoice(),
@@ -152,6 +180,8 @@ export const editPlateItem = (plate) => {
           }
        })
          .then(res => {
+
+           localStorage.setItem('active', 'Yes');
         dispatch({type: 'PLATE_ITEM_DATA', res});
         })
 
@@ -188,16 +218,12 @@ export const saveOrder = (data) => {
          .then(res => {
             //  console.log(res)
            if(res.data.status === "success"){
-
-                     dispatch({type: 'SAVE_SUCCESS', res});
+              
+                   localStorage.removeItem('active  ');    
+                dispatch({type: 'SAVE_SUCCESS', res});
                 dispatch(receiptNumber());
                 dispatch(fetchBasket());
-                if(data.segment === "edit"){ 
-                    // eslint-disable-next-line no-unused-expressions
-                    <Redirect to = '/pos' />
-
-                }
-
+                 
            }
            else {
                  dispatch({type: 'SAVE_ERROR', res});
@@ -212,6 +238,39 @@ export const saveOrder = (data) => {
     }
 }
 
+export const saveEditOrder = (data) => {
+    return (dispatch, getState) => {
+        // console.log(data)
+        //make async call to database
+           const invoice = localStorage.getItem('receiptNumber')
+      axios.post(serverUrl + 'posextra/saveEditOrder/',{
+           ...data,
+             token:token(),
+            shopId: shopId(),
+            invoice:invoice
+        })
+         .then(res => {
+            //  console.log(res)
+           if(res.data.status === "success"){
+              
+                   localStorage.removeItem('active  ');    
+                dispatch({type: 'SAVE_SUCCESS', res});
+                dispatch(receiptNumber());
+                dispatch(fetchBasket());
+                window.location.href="/smartrest/pos";
+           }
+           else {
+                 dispatch({type: 'SAVE_ERROR', res});
+                 console.log(res)
+           }
+        }).catch((err) => {
+             dispatch({type: 'SAVE_ERROR', err});
+                 console.log(err)
+        })
+
+
+    }
+}
 export const fetchSavedInvoice = () => {
     return  (dispatch) => {
        axios.get( serverUrl + 'pos/fetchSavedInvoice',{
@@ -230,10 +289,28 @@ export const fetchSavedInvoice = () => {
     }
 }
 
+export const fetchOptInvoice = () => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'print/list', {
+      params: {
+        shopId: shopId(),
+        invoice: invoice()
+      }
+    })
+      .then(res => {
+        console.log(res)
+        dispatch({ type: 'FETCH_OPT_ORDER', res });
+      }).catch((error) => {
+        console.log(error);
+      })
+
+  }
+}
+
 
 export const fetchBasket = () => {
     return  (dispatch) => {
-       axios.get( serverUrl + 'pos/fetchBasket',{
+       axios.get( serverUrl + 'posextra/fetchBasket',{
         params : {
              token: token(),
             shopId: shopId()
@@ -251,7 +328,7 @@ export const fetchBasket = () => {
 
 export const fetchKitchenBasket = () => {
     return  (dispatch) => {
-       axios.get( serverUrl + 'pos/fetchKitchenBasket',{
+      axios.get(serverUrl + 'kitchen/fetchKitchenBasket',{
         params : {
              token: token(),
             shopId: shopId()
@@ -270,7 +347,7 @@ export const fetchKitchenBasket = () => {
 export const emptyCart = () => {
     return (dispatch) => {
            const invoice = localStorage.getItem('receiptNumber')
-       axios.get( serverUrl + 'pos/emptyCart',{
+       axios.get( serverUrl + 'posextra/emptyCart',{
         params : {
              invoice:invoice,
             shopId: shopId()
@@ -294,7 +371,7 @@ export const emptyCart = () => {
 
 export const deleteCartItem = (id, ord_type, plate,invoice) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/deleteCartItem',{
+      axios.get(serverUrl + 'posextra/deleteCartItem',{
         params : {
              id:id,
              ord_type:ord_type,
@@ -323,7 +400,7 @@ export const deleteCartItem = (id, ord_type, plate,invoice) => {
 export const quantityChange = (data) => {
     return (dispatch) => {
            const invoice = localStorage.getItem('receiptNumber')
-       axios.get( serverUrl + 'pos/quantityChange',{
+      axios.get(serverUrl + 'posextra/quantityChange',{
         params : {
             ...data,
             shopId: shopId(),
@@ -331,6 +408,8 @@ export const quantityChange = (data) => {
           }
        })
          .then(res => {
+
+           localStorage.setItem('active', 'Yes');
               if(res.data.status === "success"){
                   dispatch({type: 'SAVE_SUCCESS', res});
                dispatch(getCartItem());
@@ -349,7 +428,7 @@ export const quantityChange = (data) => {
 
 export const localPlusMinus = (plate, invoice) => {
     return (dispatch) => { 
-       axios.get( serverUrl + 'pos/localPlusMinus',{
+      axios.get(serverUrl + 'posextra/localPlusMinus',{
         params : {
             plate: plate,
               invoice: invoice, 
@@ -357,7 +436,8 @@ export const localPlusMinus = (plate, invoice) => {
           }
        })
          .then(res => {
-           console.log("localPlusMinus", res)
+
+           localStorage.setItem('active', 'Yes');
               if(res.data.status === "success"){
                   dispatch({type: 'SAVE_SUCCESS', res});
                dispatch(getCartItem());
@@ -375,7 +455,7 @@ export const localPlusMinus = (plate, invoice) => {
 }
 export const fetchReceivable = () => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/fetchReceivable',{
+       axios.get( serverUrl + 'posextra/fetchReceivable',{
         params : {
              token:token(),
             shopId: shopId()
@@ -390,7 +470,7 @@ export const fetchReceivable = () => {
 
 export const fetchKitchenReceivable = () => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/fetchKitchenReceivable',{
+      axios.get(serverUrl + 'kitchen/fetchKitchenReceivable',{
         params : {
           position:position(),
             shopId: shopId()
@@ -441,12 +521,13 @@ export const getInvoiceDetails = (invoice) => {
 
 export const mergeOrder = (data) => {
     return (dispatch) => {
-       axios.post( serverUrl + 'pos/mergeInvoice',{
+      axios.post(serverUrl + 'posextra/mergeInvoice',{
            ...data,
            shopId:shopId(),
            token:token()
        })
          .then(res => {
+           console.log(res)
          if(res.data.status === "error"){
                 dispatch({type: 'CREATE_FORM_ERROR', res});
            }
@@ -464,7 +545,7 @@ export const mergeOrder = (data) => {
 
 export const cancelOrder = (id,invoice) => {
   return (dispatch) => {
-     axios.get( serverUrl + 'pos/cancelOrder',{
+    axios.get(serverUrl + 'posextra/cancelOrder',{
       params : {
           id:id,
            invoice:invoice,
@@ -490,7 +571,7 @@ export const cancelOrder = (id,invoice) => {
 
 export const kitchenApprove = (menu_id,accept,invoice,base) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/kitchenApprove',{
+       axios.get( serverUrl + 'kitchen/kitchenApprove',{
         params : {
           menu_id:menu_id,
             base:base,
@@ -501,7 +582,8 @@ export const kitchenApprove = (menu_id,accept,invoice,base) => {
           }
        })
          .then(res => {
-          //  console.log(res)
+
+           localStorage.setItem('active', 'Yes');
              if(res.data.status === "success"){
                dispatch({type: 'SAVE_SUCCESS', res});
                 dispatch(fetchKitchenReceivable());
@@ -519,13 +601,15 @@ export const kitchenApprove = (menu_id,accept,invoice,base) => {
 
 export const payNow = (id) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/payNow',{
+       axios.get( serverUrl + 'posextra/payNow',{
         params : {
             id:id,
             token:token()
           }
        })
          .then(res => {
+
+           localStorage.setItem('active', 'Yes');
         dispatch(fetchReceivable());
         })
 
@@ -534,7 +618,7 @@ export const payNow = (id) => {
 
 export const payAllBalances = (kitchen) => {
     return (dispatch) => {
-       axios.get( serverUrl + 'pos/payAllBalances',{
+       axios.get( serverUrl + 'posextra/payAllBalances',{
         params : {
             kitchen:kitchen,
             shopId:shopId(),

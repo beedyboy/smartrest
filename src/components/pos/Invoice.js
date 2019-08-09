@@ -99,7 +99,7 @@ render(){
                                             </tr>
                            )
                        })}
- <tr className="tabletitle" key={shortId.generate()}>
+ <tr className="bg" key={shortId.generate()}>
       <td  colSpan="3" className="item"></td>
 </tr>
                  <tr className="" key={shortId.generate()}>
@@ -145,7 +145,7 @@ render(){
 
                               Powered By: techtetra.com
                               <br />
-                             +233274078580 | +2347037351836
+                              +233263128007 | +233274078580 |  +2347037351836
 
                             </p>
                         </div>

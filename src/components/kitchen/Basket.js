@@ -6,8 +6,8 @@ import {Helmet} from "react-helmet";
  import PageLoading from '../loading/PageLoading'
 import {TableConfig} from '../../Config'
 import { Table , Typography, Button,Modal, Icon} from 'antd';
+import shortId from 'shortid' 
 const {  Text } = Typography;
-
 const OrderDetails = lazy(() => import('../pos/OrderDetails'));
 
 class Basket extends PureComponent {
@@ -44,7 +44,7 @@ class Basket extends PureComponent {
  const columns = [
      {
         title: 'Invoice No',
-        key: 'invoice',
+        key: shortId.generate(),
          render: (record)=>  (
                 <React.Fragment>
 
@@ -55,17 +55,17 @@ class Basket extends PureComponent {
       {
         title: 'Menu Item',
         dataIndex: 'item',
-        key: 'item',
+        key: shortId.generate(),
       },
         {
         title: 'QTY',
         dataIndex: 'qty',
-        key: 'qty',
+       key: shortId.generate(),
       }, 
       {
         title: 'Amount (' +settings.currency+')',
         dataIndex: 'total',
-        key: 'total',
+        key: shortId.generate(),
       }, 
        {
         title: 'Date',

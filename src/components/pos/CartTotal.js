@@ -16,11 +16,15 @@ const CartTotal = memo(({summary, settings}) =>{
 
            ),
       },
-      // {
-      //   title: 'Discount',
-      //   dataIndex: 'discount',
-      //   key: 'discount',
-      // },
+      {
+        title: 'Discount', 
+        key: 'discount',
+        render: (text, record) => ( 
+          <Tag color="geekblue" key={record.total}>Sub Total  {record.discount}  ({settings.currency}) </Tag>
+
+
+        ),
+      },
       {
         // title: 'Sub Total',
         dataIndex: 'total',

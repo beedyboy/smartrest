@@ -19,13 +19,13 @@ class Basket extends PureComponent {
             receipt: '',
             modal:   false,
             visible : false
-        }
-
-        showModal = (value) => {
+        } 
+ showModal = (id,value) => {
           this.props.fetchOrderByInvoice(value)
           this.setState({
            ...this.state,
               receipt: value,
+              id:id,
             modal: true
           });
         }
@@ -46,56 +46,112 @@ class Basket extends PureComponent {
  const columns = [
      {
         title: 'Invoice No',
-        key: 'invoice_number',
-         render: (record)=>  (
-                <React.Fragment>
+            render:(text,record)=> {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children:   <React.Fragment>
 
-              <Button type="primary"  onClick={() =>this.showModal(record.invoice_number)}><Icon type="eye" />{record.invoice_number}</Button>
-                </React.Fragment>
-           )
+              <Button type="primary" onClick={() =>this.showModal(record.id, record.invoice_number)}>
+                  <Icon type="eye" />{record.invoice_number}</Button>
+                </React.Fragment>,
+          };
+        },
+        // key: 'invoice_number',
+         
       },
       {
         title: 'Order Number',
         dataIndex: 'order_number',
-        key: 'order_number',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.order_number}</span>,
+          };
+        },
+        // key: 'order_number',
       },
       {
         title: 'Amount (' +settings.currency+')',
         dataIndex: 'gtotal',
-        key: 'amount',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.gtotal}</span>,
+          };
+        },
+        // key: 'amount',
       },
       {
         title: 'Balance (' +settings.currency+')',
         dataIndex: 'gtotal',
-        key: 'balance',
+        render(text, record) {
+          return {
+            props: {
+              style: { background: record.color },
+            },
+            children: < span>  {record.balance}</span>,
+          };
+        },
+        // key: 'balance',
       },
-     {
-        title: 'Waiter',
-        dataIndex: 'waiter',
-        key: 'waiter',
-      },
-     {
-        title: 'Type',
-        dataIndex: 'ord_type',
-        key: 'ord_type',
-      },
+   {
+     title: 'Waiter',
+     dataIndex: 'waiter',
+     render(text, record) {
+       return {
+         props: {
+           style: { background: record.color },
+         },
+         children: < span>  {record.waiter}</span>,
+       };
+     },
+     // key: 'waiter',
+   },
+   {
+     title: 'Type',
+     dataIndex: 'ord_type',
+     render(text, record) {
+       return {
+         props: {
+           style: { background: record.color },
+         },
+         children: < span>  {record.ord_type}</span>,
+       };
+     },
+     // key: 'ord_type',
+   },
         {
         title: 'Table',
         dataIndex: 'table',
-        key: 'table',
+         render(text, record) {
+       return {
+         props: {
+           style: { background: record.color },
+         },
+         children: < span>  {record.table}</span>,
+       };
+     },
+        // key: 'table',
       },
-       {
-        title: 'Seat',
-        dataIndex: 'seat',
-        key: 'seat',
-      },
-       {
-        title: 'Date',
-        key: 'created_at',
-           render: (record)=> (
-                <Text strong type="primary">{record.created_at} </Text>
-           )
-      }
+   {
+     title: 'Date',
+     // key: 'created_at',
+     render(text, record) {
+       return {
+         props: {
+           style: { background: record.color },
+         },
+         children: <Text strong type="primary">{record.created_at} </Text>,
+       };
+     },
+
+   },
 
     ]
         return (

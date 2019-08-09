@@ -21,17 +21,13 @@ let purchases = false;
 let sales = false;
 let booSales = false;
 let inventory = false;
-// let kitboo = false;
+let stock = false;
+let store = false;
 
 if(props.position !== '' && (props.position === 'SuperAdmin') )
 {
     boo = true
 }
-// if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Supervisor') || (props.position === 'KitchenAttendant')) )
-// {
-//     kitboo = true
-// }
-
 
 if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Supervisor') ) )
 {
@@ -40,10 +36,15 @@ if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.positio
     user = true
     menu = true
     supplier = true
+    stock = true
 }
-if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Supervisor')  || (props.position === 'StoreKeeper') ) )
+if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Supervisor')  || (props.position === 'Storekeeper') ) )
 {
     purchases = true
+}
+if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Storekeeper') ) )
+{
+    store = true
 }
 if(props.position !== '' && ((props.position === 'SuperAdmin') || (props.position === 'Admin') || (props.position === 'Supervisor')  || (props.position === 'MobileAttendant')  || (props.position === 'Waiter')  || (props.position === 'Cashier') || (props.position === 'Bartender') ) )
 {
@@ -107,6 +108,7 @@ if(menu || purchases)
                  : ''}
 {inventory? (
            <SubMenu key="sub1" title={<span><Icon type="appstore" /><span>Inventory </span></span>}>
+                <Menu.Item key="17">  <NavLink to='/product'><Icon type="coffee" />Product</NavLink></Menu.Item>
 
                  <Menu.Item key="4">  <NavLink to='/menu'><Icon type="coffee" />Menu</NavLink></Menu.Item>
 
@@ -114,6 +116,24 @@ if(menu || purchases)
                        (<Menu.Item key="5">  <NavLink to='/purchases'><Icon type="database" theme="filled" />Purchases</NavLink></Menu.Item>)
                  : ''}
 
+            {store?
+  (      <Menu.Item key="14">  <NavLink to='/store'><Icon type="coffee" />Store</NavLink></Menu.Item>
+) :''}
+{stock?
+  ( <Menu.Item key="16"> <NavLink to='/stock'>
+         <Icon type="fork" /> Stocks
+             </NavLink>
+        </Menu.Item>)
+:''}
+                {boo ? (
+                  <Menu.Item key="15">
+                    <NavLink to='inventory/settings'>
+                      <Icon type="setting" />
+                      <span className="nav-text">Settings</span>
+                    </NavLink>
+                  </Menu.Item>
+
+                ) : ''}
            </SubMenu>
       )
                  : ''}
@@ -133,6 +153,8 @@ if(menu || purchases)
           <span className="nav-text">Kitchen</span>
              </NavLink>
         </Menu.Item>
+
+
    
           {canReport? (
            <SubMenu key="sub2" title={<span><Icon type="reconciliation" /><span>Report </span></span>}>

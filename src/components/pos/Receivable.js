@@ -8,7 +8,7 @@ import {  Redirect,withRouter } from 'react-router-dom';
  import * as actions from '../../store/actions/posActions'
  import PageLoading from '../loading/PageLoading'
  import OrderDetails from './OrderDetails'
-import {TableConfig, Styles} from '../../Config'
+import {invoiceTableConfig, Styles} from '../../Config'
 import { Table , Typography, Button, Select, Form,Radio, Modal, Spin, Icon, Row, Col, Popconfirm, message} from 'antd';
 const {  Text } = Typography;
 
@@ -30,9 +30,10 @@ class Receivable extends PureComponent {
             merge:   false,
             visible : false,
           redirect: false,
-          intervalId:'',
-          invoiceList: [], // Check here to configure the default column
-         fetching: false
+          intervalId:'', 
+         fetching: false, 
+         selectedRowKeys: [], // Check here to configure the default column
+        loading: false,
         }
 
         showModal = (id,value) => {
@@ -59,20 +60,7 @@ class Receivable extends PureComponent {
 
           });
         }
-        showMerge = (id) => {
-          let data = []
-          data =this.props.receivable && this.props.receivable.filter((d)=> {
-              return d.id !== id
-          })
-          this.setState({
-                    ...this.state,
-              id:id,
-            merge:true,
-              invoiceList:data
-
-          });
-
-        }
+       
         cancelOrder = (id, invoice)=> {
           this.props.cancelOrder(id, invoice)
           this.handleOk('modal')
@@ -116,11 +104,6 @@ class Receivable extends PureComponent {
           }
           handlePayAll=()=> {
 
-              // const value = e.target.value
-              //      this.setState({
-              //          ...this.state,
-              //          kitchen:value
-              //      })
                 this.props.payAllBalances('All')
 
 }
@@ -152,91 +135,169 @@ class Receivable extends PureComponent {
         })
     }
       merge = () => {
+         this.setState({ loading: true });
     this.props.mergeOrder(this.state)
-          if(this.props.result.sending){
-        this.handleOk('merge')
-    }
+    // ajax request after empty completing
+    setTimeout(() => {
+      this.setState({
+        selectedRowKeys: [],
+        loading: false,
+      });
+    }, 1000);
+  };
+ 
+
+  onSelectChange = selectedRowKeys => {
+    // console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
   };
 
 
  render() {
 
   const { editdel,settings,receivable,orderDetails,Order} = this.props
-     const {invoiceList, fetching} = this.state
+     const { fetching, loading, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
  const columns = [
      {
         title: 'Invoice No',
-        key: 'invoice_number',
-         render: (record)=>  (
-                <React.Fragment>
+
+     render: (text, record) => {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children:   <React.Fragment>
 
               <Button type="primary" onClick={() =>this.showModal(record.id, record.invoice_number)}>
                   <Icon type="eye" />{record.invoice_number}</Button>
-                </React.Fragment>
-           )
+                </React.Fragment>,
+          };
+        },
+        // key: 'invoice_number',
+       
       },
       {
         title: 'Order Number',
         dataIndex: 'order_number',
-        key: 'order_number',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.order_number}</span>,
+          };
+        },
+        // key: 'order_number',
       },
       {
         title: 'Amount (' +settings.currency+')',
         dataIndex: 'gtotal',
-        key: 'amount',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.gtotal}</span>,
+          };
+        },
+        // key: 'amount',
       },
       {
         title: 'Kitchen',
         dataIndex: 'kitchen',
-        key: 'kitchen',
+        render(text, record) {
+          return {
+            props: {
+              style: { background: record.color },
+            },
+            children: < span>  {record.kitchen}</span>,
+          };
+        },
+        // key: 'kitchen',
       },
      {
         title: 'Waiter',
         dataIndex: 'waiter',
-        key: 'waiter',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.waiter}</span>,
+          };
+        },
+        // key: 'waiter',
       },
      {
         title: 'Type',
         dataIndex: 'ord_type',
-        key: 'ord_type',
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.ord_type}</span>,
+          };
+        },
+        // key: 'ord_type',
       },
        {
         title: 'Date',
-        key: 'created_at',
-           render: (record)=> (
-                <Text strong type="primary">{record.created_at} </Text>
-           )
+        // key: 'created_at',
+        render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children:   <Text strong type="primary">{record.created_at} </Text>,
+          };
+        },
+            
       },
         {
         title: 'Table',
         dataIndex: 'table',
-        key: 'table',
-      },
-       {
-        title: 'Seat',
-        dataIndex: 'seat',
-        key: 'seat',
-      },
+         render(text,record)  {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: < span>  {record.table}</span>,
+          };
+        },
+        // key: 'table',
+      }, 
        {
            title: 'Action',
         key: 'key',
-           render: (record)=>  (
-                <React.Fragment>
-                    {record.kitchen_status === "Approved"? (
+         render:(text,record)=> {
+          return {
+            props: {
+              style: {background: record.color},
+            },
+            children: <React.Fragment>
+              {record.kitchen_status === "Approved" ? (
 
-                    <Popconfirm title={"Confirm "+ record.invoice_number+" has paid？"}
-                                onConfirm={()=>this.confirm(record.id)}
-                                onCancel={this.cancel}
-                                okText="Yes" cancelText="No">
-  <Button type="danger"  style={Styles.button}><Icon type="upload" />Pay</Button>
-  </Popconfirm>
-                    ): ''}
+                <Popconfirm title={"Confirm " + record.invoice_number + " has paid？"}
+                  onConfirm={() => this.confirm(record.id)}
+                  onCancel={this.cancel}
+                  okText="Yes" cancelText="No">
+                  <Button type="danger" style={Styles.button}><Icon type="upload" />Pay</Button>
+                </Popconfirm>
+              ) : ''}
+         
 
-<Button type="primary" onClick={() =>this.printOrder(record.invoice_number)}><Icon type="printer" />Print</Button>
-              <Button type="secondary" onClick={() =>this.showMerge(record.id)}><Icon type="printer" />Merge</Button>
-                </React.Fragment>
-           )
-
+              <Button type="primary" onClick={() => this.printOrder(record.invoice_number)}><Icon type="printer" />Print</Button>
+ 
+            </React.Fragment>,
+          };
+        },
+           
 
           }
 
@@ -285,8 +346,25 @@ class Receivable extends PureComponent {
       </Select>
 
         </div>
-
- <Table rowKey="id" dataSource={receivable} columns={columns}  {...TableConfig}   bordered   title={() =>  <Text strong type="primary">Account Receivable </Text>} />
+ 
+  <div style={{ marginBottom: 1 }}>
+          <Button type="primary" onClick={this.merge} disabled={!hasSelected} loading={loading}>
+            Merge
+          </Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+          </span>
+        </div>
+        <Table rowSelection={rowSelection} rowKey="id" dataSource={receivable} columns={columns}  {...invoiceTableConfig}   bordered   title={() =>  <Text strong type="primary">Account Receivable </Text>} />
+        
+         <div style={{ marginTop: 8 }}>
+          <Button type="primary" onClick={this.merge} disabled={!hasSelected} loading={loading}>
+            Merge
+          </Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+          </span>
+        </div>
             </React.Fragment>
 
 
@@ -317,54 +395,7 @@ class Receivable extends PureComponent {
 
         </Modal>
         </React.Fragment>
-
-    <React.Fragment>
-<Modal
-          title="Merge Order"
-          visible={this.state.merge}
-          onOk={()=>this.handleOk('merge')}
-           onCancel={()=>this.handleOk('merge')}
-        >
-        <Suspense fallback={<PageLoading/>}>
-<Row gutter={16}>
-     <Col span={24}>
-    <Text strong type="primary">Please select one </Text>
-     </Col>
-      <Col span={24}>
-         <Form.Item label="Select Invoice to merge" >
-
-
-          <Select
-    showSearch
-    style={{ width: 200 }}
-    placeholder="Select Invoice"
-    optionFilterProp="children"
-    onChange={this.handleMergeInvoice}
-    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-  >
-  {invoiceList && invoiceList.map((minvoice, key) => {
-           return (
-        <Option key={minvoice.id} value={minvoice.invoice_number}> {minvoice.invoice_number} </Option>
-        )
-        }
-        )}
-
-  </Select>
-         </Form.Item>
-
-
-<Button type="primary" disabled={this.state.invoice === ''? true : false} style={Styles.button} onClick={this.merge} >Merge Order</Button>
-
-
-      </Col>
-</Row>
-
-</Suspense>
-
-        </Modal>
-        </React.Fragment>
-
-
+ 
     <React.Fragment>
 <Modal
           title="Order Details"

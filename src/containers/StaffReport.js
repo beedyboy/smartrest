@@ -2,15 +2,18 @@
  * Created by wawooh on 5/5/19.
  */
 
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Suspense } from 'react'
 import moment from 'moment';
 import shortid from 'shortid';
 import {fetchUsers} from '../store/actions/userActions'
 import {getSystemSettings} from '../store/actions/settingsActions'
 import * as actions from '../store/actions/reportActions'
-import {  Form, Radio, Select} from 'antd';
+import * as posActions from '../store/actions/posActions'
+import {  Form, Radio, Select, Modal} from 'antd';
 import {connect} from 'react-redux'
 import {Helmet} from "react-helmet";
+import OrderDetails from '../components/pos/OrderDetails'
+import PageLoading from '../components/loading/PageLoading'
 import StaffEvaluation from '../components/report/StaffEvaluation';
 import {position,fullname} from '../store/utility'
 import NoAccess from '../components/utility/NoAccess'
@@ -24,7 +27,11 @@ class StaffReport extends PureComponent {
             staff: '',
             view:'All',
             year:'',
-            month:''
+            month:'',
+            trail:false,
+            id:'',
+            receipt: '',
+            modal:false
         }
 
             handleChangeStaff = (value)=>{
@@ -57,6 +64,23 @@ class StaffReport extends PureComponent {
         this.props.departmentReport(this.state)
     }
 
+ showModal = (id,value) => {
+          this.props.fetchOrderByInvoice(value)
+          this.setState({
+           ...this.state,
+              receipt: value,
+              id:id,
+            modal: true
+          });
+        }
+
+        handleOk = (field) => {
+          this.setState({
+                    ...this.state,
+            [field]:false
+
+          });
+        }
    filterDept=(e)=> {
               // console.log(`radio checked:${e.target.value}`);
               const value = e.target.value
@@ -83,7 +107,7 @@ class StaffReport extends PureComponent {
     }
   render() {
  if (position() === "SuperAdmin") {
-    const {users, staffs, settings} = this.props
+    const {users, staffs, settings, orderDetails} = this.props 
      let settingsData = []
   settings && settings.forEach(function(val,index) {
       settingsData['id'] = settings[index].id
@@ -231,12 +255,26 @@ const ym = year+'-'+month
  </div>
 
      <div className="column column-8">
-         <StaffEvaluation report={data}  settings={settingsData} />
+            <StaffEvaluation report={data}  showModal={this.showModal} 
+             settings={settingsData}/>
 
      </div>
 
  </div>
-
+      <React.Fragment>
+          <Modal
+                    title="Order Details"
+                    visible={this.state.modal}
+                    onOk={()=>this.handleOk('modal')}
+                     onCancel={()=>this.handleOk('modal')}
+                  >
+                  <Suspense fallback={<PageLoading/>}>
+          <OrderDetails  order={orderDetails} currency={settingsData.currency} invoice={this.state.receipt}/>
+          
+          </Suspense>
+          
+                  </Modal>
+                  </React.Fragment>
 
         </React.Fragment>
      )
@@ -251,7 +289,8 @@ const mapStateToProps = (state)=> {
         settings: state.setting.settings,
         users: state.user.users,
         staffs: state.report.staffs,
-        auth: state.auth
+        auth: state.auth,
+        orderDetails: state.pos.orderDetails,
 
     }
 }
@@ -260,7 +299,8 @@ const mapDispatchToProps = (dispatch) => {
 getSystemSettings:(data)=>dispatch(getSystemSettings()),
        fetchUsers: ()=> dispatch(fetchUsers()),
     staffReport: (data)=> dispatch(actions.staffReport(data)),
-      departmentReport: (data)=> dispatch(actions.departmentReport(data))
+      departmentReport: (data)=> dispatch(actions.departmentReport(data)),
+fetchOrderByInvoice: (invoice)=> dispatch(posActions.fetchOrderByInvoice(invoice)),
   }
 }
 

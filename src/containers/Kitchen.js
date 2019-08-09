@@ -13,7 +13,7 @@ import {TableConfig2} from '../Config'
 import {position,fullname} from '../store/utility'
 import NoAccess from '../components/utility/NoAccess'
 import { Tabs,Table , Typography, Button, Modal, Icon,   message} from 'antd';
-// import shortId from 'shortid' 
+import shortId from 'shortid' 
 const {  Text } = Typography;
 
 const TabPane = Tabs.TabPane;
@@ -86,26 +86,21 @@ clearInterval(this.intervalId);
       settingsData['updated_by'] = settings[index].updated_by
       settingsData['updated_at'] = settings[index].updated_at
 })
-      // const data = receivable.filter((d)=>{
-      //      return d.kitchen_status === "Pending"
-      // })
-
-      // let i =0;
-      // console.log(settingsData.currency)
+       
  const columns = [
   {
     title: 'Order Number',
     dataIndex: 'orderNumber',
-    key: 'orderNumber',
+   key: shortId.generate(),
   },
   {
     title: 'Order Type',
     dataIndex: 'orderType',
-    key: 'orderType',
+  key: shortId.generate(),
   },
      {
         title: 'Invoice No',
-        key: 'invoice',
+        key: shortId.generate(),
          render: (record)=>  (
                 <React.Fragment>
 
@@ -117,31 +112,31 @@ clearInterval(this.intervalId);
      {
         title: 'Item',
         dataIndex: 'menu_name',
-        key: 'menu_name',
+        key: shortId.generate(),
       },
         {
         title: 'QTY',
         dataIndex: 'qty',
-        key: 'qty',
+        key: shortId.generate(),
       } ,
       {
         title: 'Amount (' +settingsData.currency+')',
         dataIndex: 'total',
-        key: 'total',
+       key: shortId.generate(),
       },
       {
         title: 'Waiter',
         dataIndex: 'waiter',
-        key: 'waiter',
+       key: shortId.generate(),
       } ,
       {
         title: 'Table',
         dataIndex: 'table',
-        key: 'table',
+        key: shortId.generate(),
       } ,
        {
            title: 'Action',
-        key: 'key',
+        key: shortId.generate(),
            render: (record)=>  (
                 <React.Fragment>
                     <Button onClick={()=>this.handleApprove(record.menu_id,record.accept, record.invoice,record.base)}><Icon type="check-circle" />Approve </Button>

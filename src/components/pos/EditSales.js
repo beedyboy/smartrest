@@ -1,9 +1,9 @@
  
-import React, {PureComponent,Suspense } from 'react';
+import React, {PureComponent,Suspense } from 'react';  
 import {Styles} from '../../Config'
 import {connect} from 'react-redux';
 import {Helmet} from "react-helmet";
-import { Switch, Modal, Button, InputNumber, Tabs, Select, Form, Card,Pagination, Spin, Divider, Icon } from 'antd';
+import { Switch, Modal, Button, Tabs, Select, Form, Card,Pagination, Spin, notification, Divider, Icon } from 'antd';
 import * as actions from '../../store/actions/posActions'
 import * as hactions from '../../store/actions/hallActions'
 import * as iactions  from '../../store/actions/inventoryActions'
@@ -22,23 +22,29 @@ const gridStyle = {
     width: '25%',
     textAlign: 'center',
       backgroundColor:'#85a5ff'
+  };
+  const input = {
+    width: '30%',
+    fontSize: '15',
+    border:'2px solid #000',
+      backgroundColor:'#85a5ff',
+      color:'white'
   }; 
 const numEachPage = 10
 let itemCount = 0; 
+let newplate = 0;
 let plateOrder= [];
 
 function callback(key) {
     console.log(key);
-  }
+  } 
   let menuFrame = []
 
 class EditSales extends PureComponent {
     state = {
         id:'',
-        type: '',
-        segment:'edit',
-        minValue:0,
-        maxValue: 10,
+        done: false,
+        type: '',  
         waiter: '',
         menu: [],
         menuFrame:[],
@@ -49,18 +55,19 @@ class EditSales extends PureComponent {
         data: [], 
         localOrder:[],
         localQty:[],
+        qty: 1,
         value: '',
         tname: '',
         kitchen: '',
         modal: {
             add:false,
             edit: false,
-            title: '',
-            qty:1,
+            title: '', 
             id: ''
         },
         base:false,
         fetching: false,
+        loading:false
     }
     
     showModal = (field) => {
@@ -131,14 +138,16 @@ class EditSales extends PureComponent {
         
     }
 
-    handleBaseQty = (value) => {  
+   
+   
+    handleBaseQty = (e) => {  
+       
+       let { value, min, max} = e.target;
+       value = Math.max(Number(min), Math.min(Number(max), Number(value)));
         this.setState({
             ...this.state,  
-            modal:{
-                ...this.state.modal, 
-                qty: value
-            } 
-        });
+           qty: value
+        }); 
        
     }
     handleSubmitBase= (e) => { 
@@ -148,16 +157,16 @@ class EditSales extends PureComponent {
         let value = this.state.modal.id
         itemCount+=1
         local.push(value)
-        Qty.push(this.state.modal.qty? this.state.modal.qty: 1)
+        Qty.push(this.state.qty? this.state.qty: 1)
         this.setState({
             ...this.state, 
             base:true,
+                qty:1,
             modal:{
                 ...this.state.modal,
                 add:false,
                 title:'',
                 id: '',
-                qty:1
             },
             localQty:Qty,
             localOrder:local
@@ -166,7 +175,7 @@ class EditSales extends PureComponent {
         console.log("QTY", this.state.Qty)
     }
     makePlate =(e) => {
-        console.log(this.state.localOrder) 
+        // console.log(this.state.localOrder) 
         this.props.addBaseToCart(this.state.localOrder, this.state.localQty)
 
             this.handleOk();
@@ -177,22 +186,36 @@ class EditSales extends PureComponent {
                     ...this.state,  
                     localOrder:arr,
                     localQty:Qty,
+                        qty:1,
                      modal:{
                         ...this.state.modal,
                         title:'',
                         id:'',
-                        qty:1
                       } 
                 });
     }
+     editPlate = (plate) => {
+         newplate = plate
+         this.props.editPlateItem(plate)
+         setTimeout(this.resolvePlate(), 3000)
+     }
+
+     resolvePlate = () => {
+         let dd = this.props.OrderPlateItem
+         if (dd.length < 1) {
+             this.handleOk('edit')
+         }
+         this.showModal('edit')
+        
+     }
     handleOk = (field) => {
         this.setState({
                 ...this.state,
+            qty:1,
           modal:{
             ...this.state.modal,
             title:'',
             id:'',
-            qty:1,
           [field]: false
           } 
         });
@@ -206,7 +229,7 @@ class EditSales extends PureComponent {
     }
 
 
-    handleChangeWaiter = (value) => {
+    handleChangeWaiter = (value) => { 
         this.setState({
             waiter: value
         })
@@ -220,21 +243,50 @@ class EditSales extends PureComponent {
 
 
     getSeatByTable = (value) => {
+        const tid = parseInt(value)
+         console.log("TABLE", tid)
         this.setState({
-            table: value
+            table: tid
         })
-        this.props.getSeatByTable(value)
+        // this.props.getSeatByTable(value)
+        // console.log("STATE",this.state)
     }
 
-    handleChangeSeat = (value) => {
-        this.setState({
-            seat: value
-        })
-    }
+    
 
     handleSendOrder = (e) => {
         e.preventDefault();
-        this.props.saveOrder(this.state)
+       let type = this.state.type;
+        
+        if(type === true){
+        let table = this.state.table;
+        let waiter = this.state.waiter;
+            if(table  && waiter)
+            {
+               this.setState({ loading: true }); 
+                this.props.saveEditOrder(this.state)
+                 setTimeout(() => {
+                    this.setState({ 
+                      loading: false,
+                    });
+                  }, 1000);
+            }else {
+                notification.success({
+                    placement: 'topRight',
+                    top: 44,
+                    message: 'Error Message',
+                    description: 'Waiter and table name cannot be empty',
+                    style: {
+                        width: 400,
+                        backgroundColor: 'red',
+                        color: 'white'
+                    },
+                });
+            }
+
+        }  else { //take out
+            this.props.saveEditOrder(this.state)
+        }
     }
 
     emptyCart = () => {
@@ -260,8 +312,11 @@ class EditSales extends PureComponent {
             }
     }
 
+    processDiscount = (data) => {
+        this.props.processDiscount(data)
+    }
 
-        componentDidMount(){
+        componentDidMount(){ 
            this.props.getSystemSettings()
               if("receiptNumber" in localStorage)
               {
@@ -274,16 +329,39 @@ class EditSales extends PureComponent {
                   {
                  this.handleReceipt()
                }
-               this.props.fetchAllMenu()
+               this.props.fetchAllMenu() 
          }
-         componentWillMount(){
 
+    newMethod=()=> {
+        
+        const order = this.props.order; 
+        let datas = [];
+        order && order.forEach(function (val, index) {
+            datas['id'] = order[index].id;
+            datas['period'] = order[index].period;
+            datas['table'] = order[index].tid; 
+            datas['amount'] = order[index].amount;
+            datas['kitchen'] = order[index].kitchen;
+            datas['waiter'] = order[index].waiterId;
+            datas['ord_type'] = order[index].ord_type;
+            datas['created_at'] = order[index].created_at;
+            datas['created_by'] = order[index].created_by;
+            datas['updated_by'] = order[index].updated_by;
+            datas['updated_at'] = order[index].updated_at;
+            console.log("ord_type", order[index].ord_type);
+        });
+        this.handleOrder(datas);
+    }
+
+         componentWillMount(){
             this.props.fetchWaiters()
             this.props.fetchTable()
             this.props.getKitchenFromMenu()
             this.props.fetchSavedInvoice()
          }
+     
          handleReceipt= ()=>{
+            
              this.props.receiptNumber()
          }
         handleOrder = (data)=>{
@@ -297,44 +375,53 @@ class EditSales extends PureComponent {
                 ord_type=false
 
             }
+            const count = this.props.order.length
+            let done = false
+            if(count > 0){  done= true}
             this.setState({
                 ...this.state,
                 id:data.id,
-                waiter:data.waiter? data.waiter: '',
-                seat:data.seat? data.seat:'',
+                done: done,
+                waiter:data.waiter? data.waiter: '', 
                 table:data.table? data.table: '',
                 kitchen:data.kitchen,
                 ord_type:ord_type
             })
-            // console.log(data.table)
+            console.log("Data count", ord_type)
 
         }
         
         componentDidUpdate(){
-            // console.log(this.props.order)
-            const order = this.props.order
-             let datas = []
-                      order && order.forEach(function(val,index) {
-                          datas['id'] = order[index].id
-                          datas['period'] = order[index].period
-                          datas['table'] = order[index].tid
-                          datas['seat'] = order[index].sid
-                          datas['amount'] = order[index].amount
-                          datas['kitchen'] = order[index].kitchen
-                          datas['waiter'] = order[index].waiter
-                          datas['ord_type'] = order[index].ord_type
-                          datas['created_at'] = order[index].created_at
-                          datas['created_by'] = order[index].created_by
-                          datas['updated_by'] = order[index].updated_by
-                          datas['updated_at'] = order[index].updated_at
-                    })
-            this.handleOrder(datas)
+            const order = this.props.order;
+            const done = this.state.done;
+        // console.log("ORDER", order);
+        let datas = [];
+        order && order.forEach(function (val, index) {
+            datas['id'] = order[index].id;
+            datas['period'] = order[index].period;
+            datas['table'] = order[index].tid; 
+            datas['amount'] = order[index].amount;
+            datas['kitchen'] = order[index].kitchen;
+            datas['waiter'] = order[index].waiterId;
+            datas['ord_type'] = order[index].ord_type;
+            datas['created_at'] = order[index].created_at;
+            datas['created_by'] = order[index].created_by;
+            datas['updated_by'] = order[index].updated_by;
+            datas['updated_at'] = order[index].updated_at;
+            console.log("i", order[index].ord_type);
+        });
+
+        if(done === false ){ 
+            this.handleOrder(datas);
+            // console.log("False Data", datas)
+        }
+           
         }
     render() {
-    
+        //  console.log("DONE", this.state.done);
 
          const {waiters,  data,  summary, OrderPlateItem,  htables, settings, menuCategory} = this.props
-         const { fetching, localOrder , type} = this.state;
+         const { fetching, localOrder , type, loading} = this.state;
      const enabled = data && data.length > 0;
      const plated = itemCount && itemCount > 0 && localOrder.length > 0; 
      plateOrder = OrderPlateItem 
@@ -448,7 +535,7 @@ const en = type === true?'Dine-In': 'Take-Out';
 
 <div className="child  large-8 med-8 small-8">
 
-   <CartList settings={settingsData} data={data} remove={this.removeCartItem} changeQty={this.quantityChange} />
+                        <CartList settings={settingsData} data={data} useDiscount={this.processDiscount}  remove={this.removeCartItem} localPlusMinus={this.localPlusMinus}  changeQty={this.quantityChange}  editPlate={this.editPlate}  />
      <CartTotal settings={settingsData} summary={summary}/>
           {this.state.type ?
   <React.Fragment>
@@ -463,6 +550,7 @@ const en = type === true?'Dine-In': 'Take-Out';
     placeholder="Assign a waiter"
     optionFilterProp="children"
     onChange={this.handleChangeWaiter}
+    value={this.state.waiter}
     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
   >
   {waiters && waiters.map((waiter, key) => {
@@ -480,8 +568,7 @@ const en = type === true?'Dine-In': 'Take-Out';
         </div>
         <div className="child  large-3 med-3 small-12">
                   <Form.Item label="Tables" >
-
-          <Select
+    <Select
     showSearch
     style={{ width: 150 }}
     placeholder="Select a table"
@@ -514,9 +601,8 @@ const en = type === true?'Dine-In': 'Take-Out';
 
             <React.Fragment>
 <Button type="danger" style={Styles.button} onClick={this.emptyCart} >Empty Cart</Button>
-
-<Button type="primary" style={Styles.button} disabled={!enabled} onClick={this.handleSendOrder} >Send Order</Button>
-            </React.Fragment>
+<Button type="primary" style={Styles.button} disabled={!enabled}  loading={loading} onClick={this.handleSendOrder} >Send Order</Button>
+                 </React.Fragment>
 
     </div>
 
@@ -538,9 +624,8 @@ const en = type === true?'Dine-In': 'Take-Out';
               onSubmit={this.handleSubmitBase}>
 
             <Form.Item label="Quantity">
-                <InputNumber id="qty"
-                      min={1} max={10} defaultValue="1"
-                       onChange={this.handleBaseQty}/>
+              <input id="qty" style={input} type="number" min="1" max="20"
+                 value={this.state.qty}   onChange={this.handleBaseQty}/>
             </Form.Item>
 
             <Form.Item>
@@ -610,16 +695,18 @@ const mapDispatchToProps = (dispatch) => {
     fetchAllMenu: ()=> dispatch(iactions.fetchMenu()),
     getKitchenFromMenu: ()=> dispatch(iactions.getKitchenFromMenu()),
       getCartItem: ()=> dispatch(actions.getCartItem()),
-      addToCart: (data)=> dispatch(actions.addToCart(data)),
+      addToCart: (data) => dispatch(actions.addToCart(data)),
+      editPlateItem: (plate) => dispatch(actions.editPlateItem(plate)),
       getCartTotal: () => dispatch(actions.getCartTotal()),
      addBaseToCart: (order, quantity) => dispatch(actions.addBaseToCart(order, quantity)),
       receiptNumber:()=> dispatch(actions.receiptNumber()),
         fetchTable: ()=> dispatch(hactions.fetchTable()),
         getSeatByTable:(tid)=>dispatch(hactions.getSeatByTable(tid)),
-      saveOrder:(data)=>dispatch(actions.saveOrder(data)),
+      saveEditOrder:(data)=>dispatch(actions.saveEditOrder(data)),
       emptyCart:()=> dispatch(actions.emptyCart()),
     deleteCartItem:(id, ord_type, plate, invoice)=>dispatch(actions.deleteCartItem(id, ord_type, plate, invoice)),
         quantityChange: (data) => dispatch(actions.quantityChange(data)),
+      processDiscount:(data)=>dispatch(actions.processDiscount(data)),
             localPlusMinus: (plate, invoice) => dispatch(actions.localPlusMinus(plate, invoice))
 
 

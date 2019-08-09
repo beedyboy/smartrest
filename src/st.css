@@ -1,5 +1,16 @@
 
 
+#report-POS{
+  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+  padding:1mm;
+  margin: 0 auto;
+  width: 79mm;
+  background: #FFF;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 900;
+  }
+
+
 #invoice-POS{
   box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
   padding:1mm;
@@ -10,8 +21,8 @@
     font-weight: 900;
   }
 
-#invoice-POS::selection {background: #f31544; color: #FFF;}
-#invoice-POS::moz-selection {background: #f31544; color: #FFF;}
+#invoice-POS::selection, #report-POS::selection {background: #f31544; color: #FFF;}
+#invoice-POS::moz-selection, #report-POS::moz-selection  {background: #f31544; color: #FFF;}
 h1{
   font-size: 1.5em;
   color: #222;
@@ -84,7 +95,7 @@ margin-bottom: 2px;
 }
 .service{  
   padding: 5px;
-  border-bottom: 1px solid #EEE;
+  border-bottom: 1px dotted #000; 
 }
 .item{width: 24mm; padding: 2px;}
 .itemtext{

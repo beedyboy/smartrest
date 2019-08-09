@@ -9,7 +9,7 @@ import {getSystemSettings} from '../store/actions/settingsActions'
  import PageLoading from '../components/loading/PageLoading'
 import SalesReportTable from '../components/report/SalesReportTable'
 import SalesTrail from '../components/report/SalesTrail'
-import {  Form, DatePicker, Button, Icon, Modal} from 'antd';
+import { Form, DatePicker, Button, Icon, Modal } from 'antd'; 
 import {connect} from 'react-redux'
 import {Helmet} from "react-helmet";
 import OrderDetails from '../components/pos/OrderDetails'
@@ -156,8 +156,8 @@ showTrail = (e) => {
 
  </div>
             <div className="grid">
-                <div className="column column-6">
-                  <SalesReportTable period={this.state.startDate + " to " + this.state.endDate} showModal={this.showModal} report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
+                <div className="column column-6"> 
+                  <SalesReportTable   period={this.state.startDate + " to " + this.state.endDate} showModal={this.showModal} report={sales} total={salesTotal} trail={this.showTrail} settings={settingsData}/>
                 </div>
 
             <div className="column column-6">
@@ -167,7 +167,7 @@ showTrail = (e) => {
 
                          <Department dept={data}  settings={settingsData}  change={this.filterDept}/>
 :
-                         <Department dept={departments}  settings={settingsData}  change={this.filterDept}/>
+                <Department dept={departments} settings={settingsData} period={this.state.startDate + " to " + this.state.endDate}   change={this.filterDept}/>
 
                  }
 

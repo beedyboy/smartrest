@@ -18,5 +18,9 @@ export function token(){return localStorage.getItem('token')}
 
 export function position(){return localStorage.getItem('position')}
 export function fullname(){return localStorage.getItem('fullname')}
+export function phone(){return localStorage.getItem('phone')}
+export function status(){return localStorage.getItem('status')}
+export function user(){return localStorage.getItem('user')} 
+export function joined(){return localStorage.getItem('joined')} 
 
 export function invoice() { return localStorage.getItem('receiptNumber')}

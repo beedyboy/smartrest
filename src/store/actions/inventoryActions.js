@@ -10,14 +10,169 @@ export const getKitchenFromMenu = () => {
             shopId: shopId() 
           }
        })
-         .then(res => {
-          //  console.log("KITCHEN", res)
+         .then(res => { 
         dispatch({type: 'KITCHEN_MENU_CATEGORY', res});
         })
 
     }
 }
- 
+
+export const saveClassification = (data) => {
+
+  return (dispatch, getState) => {
+    dispatch({ type: 'START_FORM' });
+    axios.post(serverUrl + 'classification/save/', {
+      ...data,
+      shopId: shopId()
+    })
+      .then(res => {
+
+        if (res.data.status === "success") {
+          dispatch({ type: 'CREATE_FORM', res });
+          dispatch({ type: 'SAVE_SUCCESS', res });
+          dispatch(fetchClassification());
+        }
+        else {
+          dispatch({ type: 'CREATE_FORM_ERROR', res });
+          dispatch({ type: 'SAVE_ERROR', res });
+        }
+      }).catch((err) => {
+        dispatch({ type: 'CREATE_FORM_ERROR', err });
+        dispatch({ type: 'SAVE_ERROR', err });
+      })
+
+
+  }
+}
+
+export const fetchClassification = () => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'classification/list', {
+      params: {
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+        dispatch({ type: 'FETCH_CLASSIFICATION', res });
+      })
+
+  }
+}
+export const updateClassification = (data) => {
+
+    return (dispatch, getState) => {
+          dispatch({type: 'START_FORM'});
+         axios.post(serverUrl + 'classification/update/',{
+           ...data,
+           shopId: shopId()
+        })
+         .then(res => {
+
+           if(res.data.status === "success"){
+            dispatch({type: 'CREATE_FORM', res});
+                dispatch({type: 'SAVE_SUCCESS', res});
+             dispatch(fetchClassification());
+           }
+           else {
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+            dispatch({type: 'SAVE_ERROR', res});
+           }
+        }).catch((err) => {
+              dispatch({type: 'CREATE_FORM_ERROR', err});
+            dispatch({type: 'SAVE_ERROR', err});
+        })
+
+
+    }
+}
+
+export const createUnit = (data) => {
+
+    return (dispatch, getState) => {
+          dispatch({type: 'START_FORM'});
+         axios.post(serverUrl + 'unit/save/',{
+           ...data,
+           shopId: shopId()
+        })
+         .then(res => {
+
+           if(res.data.status === "success"){
+               dispatch({type: 'CREATE_FORM', res});
+                dispatch({type: 'SAVE_SUCCESS', res});
+             dispatch(fetchUnit());
+           }
+           else {
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+            dispatch({type: 'SAVE_ERROR', res});
+           }
+        }).catch((err) => {
+              dispatch({type: 'CREATE_FORM_ERROR', err});
+            dispatch({type: 'SAVE_ERROR', err});
+        })
+
+
+    }
+}
+
+export const updateUnit = (data) => {
+
+    return (dispatch, getState) => {
+          dispatch({type: 'START_FORM'});
+         axios.post(serverUrl + 'unit/update/',{
+           ...data,
+           shopId: shopId()
+        })
+         .then(res => {
+
+           if(res.data.status === "success"){
+            dispatch({type: 'CREATE_FORM', res});
+                dispatch({type: 'SAVE_SUCCESS', res});
+             dispatch(fetchUnit());
+           }
+           else {
+                dispatch({type: 'CREATE_FORM_ERROR', res});
+            dispatch({type: 'SAVE_ERROR', res});
+           }
+        }).catch((err) => {
+              dispatch({type: 'CREATE_FORM_ERROR', err});
+            dispatch({type: 'SAVE_ERROR', err});
+        })
+
+
+    }
+}
+
+export const fetchUnit = () => {
+    return (dispatch) => {
+       axios.get( serverUrl + 'unit/list',{
+        params : {
+            shopId: shopId()
+          }
+       })
+         .then(res => {
+        dispatch({type: 'FETCH_UNIT', res});
+        })
+
+    }
+}
+
+
+export const fetchDistintUnit = (sub) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'classification/distData', {
+      params: {
+        shopId: shopId(),
+        sub: sub
+      }
+    })
+      .then(res => {
+        dispatch({ type: 'FETCH_DISTINT_UNIT', res });
+      })
+
+  }
+}
+
+
 
 export const createKitchen = (data) => {
 
@@ -166,12 +321,12 @@ export const fetchCategory = () => {
     }
 }
 
-
+ 
 export const createMenu = (data) => {
 
     return (dispatch, getState) => {
           dispatch({type: 'START_FORM'});
-         axios.post(serverUrl + 'menu/save/',{
+         axios.post(serverUrl + 'linker/save/',{
            ...data,
            shopId: shopId(),
              token:token()
@@ -209,6 +364,22 @@ export const fetchMenu = () => {
         })
 
     }
+}
+
+export const getKitchenMenu = (kitchenId) => {
+  return (dispatch) => {
+    axios.get(serverUrl + 'menu/getKitchenMenu', {
+      params: {
+        kitchenId:kitchenId,
+        shopId: shopId()
+      }
+    })
+      .then(res => {
+        // console.log(res)
+        dispatch({ type: 'FETCH_KITCHEN_MENU', res });
+      })
+
+  }
 }
 
 export const updateMenu = (data) => {
@@ -308,98 +479,113 @@ export const fetchPurchases = () => {
     }
 }
 
-
-
-export const createNewAllocation = (data) => {
-    return (dispatch, getState) => {
-        //make async call to database
-         axios.post(serverUrl + 'acquisition/save/',{
-           ...data,
-           shopId: shopId(),
-             token:token()
-        })
-         .then(res => {
-           if(res.data.status === "error"){
-                  dispatch({type: 'CREATE_FORM_ERROR', res});
-            dispatch({type: 'SAVE_ERROR', res});
-           }
-           else{
-                  dispatch({type: 'SAVE_SUCCESS', res});
-                  dispatch({type: 'CREATE_FORM', res});
-                dispatch(fetchAllocation());
-           }
-        }).catch((err) => {
-               dispatch({type: 'CREATE_FORM_ERROR', err});
-            dispatch({type: 'SAVE_ERROR', err});
-        })
-
-
-    }
-}
-
-export const updateAllocation = (data) => {
-    return (dispatch, getState) => {
-        //make async call to database
-         axios.post(serverUrl + 'acquisition/update/',{
-           ...data,
-             token:token()
-        })
-         .then(res => {
-           if(res.data.status === "error"){
-                  dispatch({type: 'CREATE_FORM_ERROR', res});
-            dispatch({type: 'SAVE_ERROR', res});
-           }
-           else{
-                    dispatch({type: 'SAVE_SUCCESS', res});
-                  dispatch({type: 'CREATE_FORM', res});
-                dispatch(fetchAllocation());
-           }
-        }).catch((err) => {
-            dispatch({type: 'CREATE_FORM_ERROR', err});
-            dispatch({type: 'SAVE_ERROR', err});
-        })
-
-
-    }
-}
-
-export const fetchAllocation = () => {
+export const fetchUsablePurchases = () => {
     return (dispatch) => {
-       axios.get( serverUrl + 'acquisition/list',{
-        params : {
-            shopId: shopId()
-          }
-       })
-         .then(res => {
-        dispatch({type: 'FETCH_ALLOCATION', res});
+        axios.get(serverUrl + 'purchase/UsablePurchases', {
+            params: {
+                shopId: shopId()
+            }
         })
+            .then(res => {
+                // console.log(res)
+                dispatch({ type: 'FETCH_USABLE_PURCHASES', res });
+            })
 
     }
 }
+
+
+
+// export const createNewAllocation = (data) => {
+//     return (dispatch, getState) => {
+//         //make async call to database
+//          axios.post(serverUrl + 'acquisition/save/',{
+//            ...data,
+//            shopId: shopId(),
+//              token:token()
+//         })
+//          .then(res => {
+//            if(res.data.status === "error"){
+//                   dispatch({type: 'CREATE_FORM_ERROR', res});
+//             dispatch({type: 'SAVE_ERROR', res});
+//            }
+//            else{
+//                   dispatch({type: 'SAVE_SUCCESS', res});
+//                   dispatch({type: 'CREATE_FORM', res});
+//                 dispatch(fetchAllocation());
+//            }
+//         }).catch((err) => {
+//                dispatch({type: 'CREATE_FORM_ERROR', err});
+//             dispatch({type: 'SAVE_ERROR', err});
+//         })
+
+
+//     }
+// }
+
+// export const updateAllocation = (data) => {
+//     return (dispatch, getState) => {
+//         //make async call to database
+//          axios.post(serverUrl + 'acquisition/update/',{
+//            ...data,
+//              token:token()
+//         })
+//          .then(res => {
+//            if(res.data.status === "error"){
+//                   dispatch({type: 'CREATE_FORM_ERROR', res});
+//             dispatch({type: 'SAVE_ERROR', res});
+//            }
+//            else{
+//                     dispatch({type: 'SAVE_SUCCESS', res});
+//                   dispatch({type: 'CREATE_FORM', res});
+//                 dispatch(fetchAllocation());
+//            }
+//         }).catch((err) => {
+//             dispatch({type: 'CREATE_FORM_ERROR', err});
+//             dispatch({type: 'SAVE_ERROR', err});
+//         })
+
+
+//     }
+// }
+
+// export const fetchAllocation = () => {
+//     return (dispatch) => {
+//        axios.get( serverUrl + 'acquisition/list',{
+//         params : {
+//             shopId: shopId()
+//           }
+//        })
+//          .then(res => {
+//         dispatch({type: 'FETCH_ALLOCATION', res});
+//         })
+
+//     }
+// }
  
-export const updateFinishedProduct = (data) => {
-    // console.log(data)
-    return (dispatch, getState) => {
-        //make async call to database
-         axios.post(serverUrl + 'acquisition/updateFinishedProduct/',{
-           ...data,
-             token:token()
-        })
-         .then(res => {
-           if(res.data.status === "error"){
-                 dispatch({type: 'CREATE_FORM_ERROR', res});
-            dispatch({type: 'SAVE_ERROR', res});
-           }
-           else{
-                    dispatch({type: 'SAVE_SUCCESS', res});
-                  dispatch({type: 'CREATE_FORM', res});
-                dispatch(fetchAllocation());
-           }
-        }).catch((err) => {
-            dispatch({type: 'CREATE_FORM_ERROR', err});
-            dispatch({type: 'SAVE_ERROR', err});
-        })
+// export const updateFinishedProduct = (data) => {
+//     // console.log(data)
+//     return (dispatch, getState) => {
+//         //make async call to database
+//          axios.post(serverUrl + 'acquisition/updateFinishedProduct/',{
+//            ...data,
+//              token:token()
+//         })
+//          .then(res => {
+//            if(res.data.status === "error"){
+//                  dispatch({type: 'CREATE_FORM_ERROR', res});
+//             dispatch({type: 'SAVE_ERROR', res});
+//            }
+//            else{
+//                     dispatch({type: 'SAVE_SUCCESS', res});
+//                   dispatch({type: 'CREATE_FORM', res});
+//                 dispatch(fetchAllocation());
+//            }
+//         }).catch((err) => {
+//             dispatch({type: 'CREATE_FORM_ERROR', err});
+//             dispatch({type: 'SAVE_ERROR', err});
+//         })
 
 
-    }
-}
+//     }
+// }

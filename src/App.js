@@ -7,20 +7,24 @@ import {connect} from 'react-redux'
 import Dashboard from './containers/Dashboard'
 import User from './containers/User'
 import Hall from './containers/Hall'
-// import ProductMenu from './containers/Product'
+import Calculator from './containers/Calculator'
 import Supplier from './containers/Supplier'
 import SignIn from './components/auth/SignIn'
 import Purchases from './containers/Purchases'
-// import Acquisition from './containers/Acquisition'
+import Supervisor from './containers/Supervisor'
 import POS from './containers/Pos'
+import Product from './containers/Product'
 import Menu from './containers/Menu'
 import Kitchen from './containers/Kitchen'
-import EditSales from './components/pos/EditSales'
+import EditSales from './components/pos/EditSales' 
 import Print from './components/utility/Print'
+import Profile from './containers/Profile'
 import Shop from './containers/Shop'
+import Store from './containers/Store'
 import SalesReport from './containers/SalesReport'
 import StaffReport from './containers/StaffReport'
 import Settings from './containers/Settings'
+import InventorySettings from './containers/InventorySettings'
 
 
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
@@ -47,16 +51,20 @@ class App extends PureComponent {
   <Route exact path='/login'
            render={(props) => (<SignIn {...this.props} />)}
            />
+           <Route exact path = '/calc'    component = {Calculator} />
                 <MainLayout {...this.props} >
 
                     <PrivateRoute exact path='/' component={Dashboard}/>
+                   <PrivateRoute exact path='/profile' component={Profile}/>
                    <PrivateRoute exact path='/hall' component={Hall}/>
                     <PrivateRoute exact path='/user' component={User}/>
                     <PrivateRoute exact path='/supplier' component={Supplier}/>
                     <PrivateRoute exact path='/menu' component={Menu}/>
-                    {/* <PrivateRoute exact path='/product' component={ProductMenu}/> */}
+                    <PrivateRoute exact path='/product' component={Product}/>
+                    <PrivateRoute exact path='/store' component={Store}/>
                     <PrivateRoute exact path='/purchases' component={Purchases}/>
-                    {/* <PrivateRoute exact path='/acquisition' component={Acquisition}/> */}
+                    <PrivateRoute exact path='/inventory/settings' component={InventorySettings} />
+                    <PrivateRoute exact path='/stock' component={Supervisor}/>
                     <PrivateRoute exact path='/pos' component={POS}/>
                     <PrivateRoute exact path='/kitchen' component={Kitchen}/>
                     <PrivateRoute  path='/order/:invoice' component={EditSales}/>
